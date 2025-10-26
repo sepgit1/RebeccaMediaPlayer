@@ -211,6 +211,10 @@
     </div>
 
     <script>
+        // Clear any existing session when login page loads
+        // This forces password entry each time the app is opened fresh
+        sessionStorage.removeItem('musicPlayerAuthenticated');
+
         // Password protection
         const CORRECT_PASSWORD = 'beccabear@13';
 
