@@ -658,6 +658,7 @@ class MusicPlayer {
         if (settingsBtn) {
             settingsBtn.addEventListener('click', () => {
                 settingsModal.style.display = 'flex';
+                this.updateAdminPanel();
             });
         }
 
@@ -699,6 +700,60 @@ class MusicPlayer {
 
         // Update active states
         this.updateSettingsUI();
+
+        // Setup admin panel if user is admin
+        this.setupAdminPanel();
+    }
+
+    setupAdminPanel() {
+        if (!this.isAdmin()) return;
+
+        const adminPanel = document.getElementById('adminPanel');
+        if (adminPanel) {
+            adminPanel.style.display = 'block';
+        }
+
+        // Clear cache button
+        const clearCacheBtn = document.getElementById('clearCacheBtn');
+        if (clearCacheBtn) {
+            clearCacheBtn.addEventListener('click', () => {
+                if (confirm('Clear browser cache?')) {
+                    caches.keys().then(names => {
+                        names.forEach(name => caches.delete(name));
+                    });
+                    this.showNotification('✨ Cache cleared successfully');
+                }
+            });
+        }
+
+        // Reset app button
+        const resetAppBtn = document.getElementById('resetAppBtn');
+        if (resetAppBtn) {
+            resetAppBtn.addEventListener('click', () => {
+                if (confirm('⚠️ Reset entire app? All songs will be deleted!')) {
+                    localStorage.clear();
+                    this.showNotification('🔄 App reset. Redirecting...');
+                    setTimeout(() => location.reload(), 1000);
+                }
+            });
+        }
+    }
+
+    updateAdminPanel() {
+        if (!this.isAdmin()) return;
+
+        // Update song count
+        const adminSongCount = document.getElementById('adminSongCount');
+        if (adminSongCount) {
+            adminSongCount.textContent = this.songs.length;
+        }
+
+        // Calculate storage size
+        const adminStorageSize = document.getElementById('adminStorageSize');
+        if (adminStorageSize) {
+            const storageUsed = JSON.stringify(localStorage).length / (1024 * 1024);
+            adminStorageSize.textContent = storageUsed.toFixed(2);
+        }
     }
 
     applyTheme(theme) {
