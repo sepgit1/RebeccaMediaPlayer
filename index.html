@@ -69,8 +69,15 @@
             </div>
         </div>
 
-        <!-- Video Player (Hidden by default) -->
-        <div id="videoContainer" class="video-container" style="display: none;">
+        <!-- Video Player (Embedded, not fullscreen) -->
+        <div id="videoContainer" class="video-container-embedded" style="display: none;">
+            <div class="video-header">
+                <span>Now Playing Video</span>
+                <div class="video-controls">
+                    <button id="expandVideoBtn" class="video-btn" title="Expand">⛶</button>
+                    <button id="minimizeVideoBtn" class="video-btn" title="Minimize">−</button>
+                </div>
+            </div>
             <video id="videoPlayer" controls>
                 Your browser does not support the video tag.
             </video>
