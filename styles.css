@@ -10,7 +10,7 @@ body {
     background: linear-gradient(135deg, #2d1a2d 0%, #3a1f1f 50%, #2d1f2d 100%);
     min-height: 100vh;
     color: #ffffff;
-    padding: 20px;
+    padding: 10px;
     overflow-x: hidden;
     position: relative;
 }
@@ -340,18 +340,18 @@ body::after {
 /* Scrollable Songs List */
 .songs-list-container {
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
     border-radius: 12px;
-    padding: 15px;
+    padding: 8px;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .songs-list-title {
     color: rgba(255, 255, 255, 0.9);
-    font-size: 1rem;
-    margin-bottom: 10px;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
     font-weight: 600;
     text-align: center;
 }
@@ -430,10 +430,10 @@ body::after {
     background: rgba(255, 20, 147, 0.7);
     border: 1px solid rgba(255, 20, 147, 0.9);
     color: #fff;
-    padding: 8px 14px;
-    border-radius: 6px;
+    padding: 4px 8px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 600;
     transition: all 0.2s ease;
     backdrop-filter: blur(8px);
@@ -1192,8 +1192,8 @@ body::after {
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    margin-bottom: 6px;
-    padding: 10px;
+    margin-bottom: 3px;
+    padding: 6px 8px;
     border-radius: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
