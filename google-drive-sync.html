@@ -1,0 +1,288 @@
+<!-- Google Drive API Setup -->
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://accounts.google.com/gsi/client"></script>
+
+<script>
+    // Google Drive Configuration
+    const GOOGLE_DRIVE_CONFIG = {
+        CLIENT_ID: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com', // You'll need to set this
+        API_KEY: 'YOUR_GOOGLE_API_KEY', // You'll need to set this
+        SCOPES: 'https://www.googleapis.com/auth/drive.file',
+        DISCOVERY_DOCS: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
+    };
+
+    class GoogleDriveSync {
+        constructor() {
+            this.tokenClient = null;
+            this.accessToken = null;
+            this.isAuthenticated = false;
+            this.folderId = null;
+        }
+
+        async initializeGoogleAPI() {
+            return gapi.client.init({
+                apiKey: GOOGLE_DRIVE_CONFIG.API_KEY,
+                discoveryDocs: GOOGLE_DRIVE_CONFIG.DISCOVERY_DOCS
+            });
+        }
+
+        async authenticateWithGoogle() {
+            try {
+                this.tokenClient = google.accounts.oauth2.initTokenClient({
+                    client_id: GOOGLE_DRIVE_CONFIG.CLIENT_ID,
+                    scope: GOOGLE_DRIVE_CONFIG.SCOPES,
+                    callback: (response) => this.handleAuthResponse(response)
+                });
+
+                // Check if already authenticated
+                const storedToken = localStorage.getItem('google_access_token');
+                if (storedToken) {
+                    this.accessToken = storedToken;
+                    this.isAuthenticated = true;
+                    return true;
+                }
+
+                // Request new token
+                this.tokenClient.requestAccessToken();
+                return new Promise((resolve) => {
+                    this.authCallback = resolve;
+                });
+            } catch (error) {
+                console.error('Google authentication error:', error);
+                return false;
+            }
+        }
+
+        handleAuthResponse(response) {
+            if (response.access_token) {
+                this.accessToken = response.access_token;
+                this.isAuthenticated = true;
+                localStorage.setItem('google_access_token', response.access_token);
+                if (this.authCallback) this.authCallback(true);
+            }
+        }
+
+        async createOrGetBeccaFolder() {
+            try {
+                const response = await gapi.client.drive.files.list({
+                    pageSize: 10,
+                    spaces: 'drive',
+                    q: "name='Becca Music Player' and mimeType='application/vnd.google-apps.folder' and trashed=false",
+                    fields: 'files(id, name)'
+                });
+
+                if (response.result.files && response.result.files.length > 0) {
+                    this.folderId = response.result.files[0].id;
+                    return this.folderId;
+                }
+
+                // Create new folder if doesn't exist
+                const fileMetadata = {
+                    name: 'Becca Music Player',
+                    mimeType: 'application/vnd.google-apps.folder'
+                };
+
+                const createResponse = await gapi.client.drive.files.create({
+                    resource: fileMetadata,
+                    fields: 'id'
+                });
+
+                this.folderId = createResponse.result.id;
+                return this.folderId;
+            } catch (error) {
+                console.error('Error creating/finding folder:', error);
+                return null;
+            }
+        }
+
+        async savePlaylistToGoogleDrive(playlists) {
+            try {
+                if (!this.isAuthenticated) {
+                    await this.authenticateWithGoogle();
+                }
+
+                const folderId = await this.createOrGetBeccaFolder();
+                if (!folderId) return false;
+
+                const fileMetadata = {
+                    name: 'becca_playlists.json',
+                    parents: [folderId],
+                    mimeType: 'application/json'
+                };
+
+                const fileContent = JSON.stringify(playlists, null, 2);
+
+                // Check if file already exists
+                const listResponse = await gapi.client.drive.files.list({
+                    q: `name='becca_playlists.json' and parents='${folderId}' and trashed=false`,
+                    spaces: 'drive',
+                    fields: 'files(id)'
+                });
+
+                if (listResponse.result.files && listResponse.result.files.length > 0) {
+                    // Update existing file
+                    const fileId = listResponse.result.files[0].id;
+                    await gapi.client.drive.files.update({
+                        fileId: fileId,
+                        resource: fileMetadata,
+                        media: { mimeType: 'application/json', body: fileContent }
+                    });
+                } else {
+                    // Create new file
+                    await gapi.client.drive.files.create({
+                        resource: fileMetadata,
+                        media: { mimeType: 'application/json', body: fileContent },
+                        fields: 'id'
+                    });
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Error saving to Google Drive:', error);
+                return false;
+            }
+        }
+
+        async loadPlaylistFromGoogleDrive() {
+            try {
+                if (!this.isAuthenticated) {
+                    await this.authenticateWithGoogle();
+                }
+
+                const folderId = await this.createOrGetBeccaFolder();
+                if (!folderId) return null;
+
+                const response = await gapi.client.drive.files.list({
+                    q: `name='becca_playlists.json' and parents='${folderId}' and trashed=false`,
+                    spaces: 'drive',
+                    fields: 'files(id)'
+                });
+
+                if (!response.result.files || response.result.files.length === 0) {
+                    return null;
+                }
+
+                const fileId = response.result.files[0].id;
+                const fileContent = await gapi.client.drive.files.get({
+                    fileId: fileId,
+                    alt: 'media'
+                });
+
+                return fileContent.result;
+            } catch (error) {
+                console.error('Error loading from Google Drive:', error);
+                return null;
+            }
+        }
+
+        async saveCommentsToGoogleDrive(comments) {
+            try {
+                if (!this.isAuthenticated) {
+                    await this.authenticateWithGoogle();
+                }
+
+                const folderId = await this.createOrGetBeccaFolder();
+                if (!folderId) return false;
+
+                const fileMetadata = {
+                    name: 'becca_comments.json',
+                    parents: [folderId],
+                    mimeType: 'application/json'
+                };
+
+                const fileContent = JSON.stringify(comments, null, 2);
+
+                const listResponse = await gapi.client.drive.files.list({
+                    q: `name='becca_comments.json' and parents='${folderId}' and trashed=false`,
+                    spaces: 'drive',
+                    fields: 'files(id)'
+                });
+
+                if (listResponse.result.files && listResponse.result.files.length > 0) {
+                    const fileId = listResponse.result.files[0].id;
+                    await gapi.client.drive.files.update({
+                        fileId: fileId,
+                        resource: fileMetadata,
+                        media: { mimeType: 'application/json', body: fileContent }
+                    });
+                } else {
+                    await gapi.client.drive.files.create({
+                        resource: fileMetadata,
+                        media: { mimeType: 'application/json', body: fileContent },
+                        fields: 'id'
+                    });
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Error saving comments to Google Drive:', error);
+                return false;
+            }
+        }
+
+        async loadCommentsFromGoogleDrive() {
+            try {
+                if (!this.isAuthenticated) {
+                    await this.authenticateWithGoogle();
+                }
+
+                const folderId = await this.createOrGetBeccaFolder();
+                if (!folderId) return null;
+
+                const response = await gapi.client.drive.files.list({
+                    q: `name='becca_comments.json' and parents='${folderId}' and trashed=false`,
+                    spaces: 'drive',
+                    fields: 'files(id)'
+                });
+
+                if (!response.result.files || response.result.files.length === 0) {
+                    return null;
+                }
+
+                const fileId = response.result.files[0].id;
+                const fileContent = await gapi.client.drive.files.get({
+                    fileId: fileId,
+                    alt: 'media'
+                });
+
+                return fileContent.result;
+            } catch (error) {
+                console.error('Error loading comments from Google Drive:', error);
+                return null;
+            }
+        }
+
+        async syncAllData(playlists, comments, settings) {
+            try {
+                await this.savePlaylistToGoogleDrive(playlists);
+                await this.saveCommentsToGoogleDrive(comments);
+                // Settings can be saved similarly
+                return true;
+            } catch (error) {
+                console.error('Error syncing data:', error);
+                return false;
+            }
+        }
+
+        async loadAllData() {
+            try {
+                const playlists = await this.loadPlaylistFromGoogleDrive();
+                const comments = await this.loadCommentsFromGoogleDrive();
+                return { playlists, comments };
+            } catch (error) {
+                console.error('Error loading data:', error);
+                return null;
+            }
+        }
+
+        logout() {
+            this.isAuthenticated = false;
+            this.accessToken = null;
+            localStorage.removeItem('google_access_token');
+            google.accounts.id.disableAutoSelect();
+        }
+    }
+
+    // Create global instance
+    const googleDriveSync = new GoogleDriveSync();
+</script>
