@@ -36,6 +36,7 @@ body {
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
     overflow: hidden;
     position: relative;
+    border: 1px solid rgba(255, 20, 147, 0.15);
 }
 
 .container::before {
@@ -1298,6 +1299,127 @@ body.orange-theme {
 body.red-theme {
     --primary-color: #ff0000;
     --secondary-color: #ff4444;
+}
+
+/* Admin Panel Styles */
+.admin-panel {
+    margin-top: 20px;
+    animation: slideDown 0.3s ease-out;
+}
+
+.admin-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    margin: 20px 0;
+}
+
+.admin-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(138, 43, 226, 0.3);
+}
+
+.admin-header h3 {
+    color: #d946ef;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.admin-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.admin-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 16px;
+    border: 1.5px solid rgba(138, 43, 226, 0.4);
+    background: rgba(138, 43, 226, 0.1);
+    color: #ffffff;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.admin-btn:hover {
+    background: rgba(138, 43, 226, 0.2);
+    border-color: rgba(138, 43, 226, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(138, 43, 226, 0.2);
+}
+
+.admin-btn.danger {
+    border-color: rgba(255, 0, 0, 0.4);
+    background: rgba(255, 0, 0, 0.1);
+}
+
+.admin-btn.danger:hover {
+    background: rgba(255, 0, 0, 0.2);
+    border-color: rgba(255, 0, 0, 0.6);
+    box-shadow: 0 5px 15px rgba(255, 0, 0, 0.2);
+}
+
+.storage-info {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+}
+
+.storage-info p {
+    margin: 8px 0;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.storage-info span {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.version-info {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+}
+
+/* Enhanced Update Button */
+.control-btn[title="Update App"] {
+    position: relative;
+    background: linear-gradient(135deg, rgba(255, 20, 147, 0.2), rgba(138, 43, 226, 0.2));
+    border: 1.5px solid rgba(255, 20, 147, 0.4);
+}
+
+.control-btn[title="Update App"]:hover {
+    background: linear-gradient(135deg, rgba(255, 20, 147, 0.3), rgba(138, 43, 226, 0.3));
+    border-color: rgba(255, 20, 147, 0.7);
+    box-shadow: 0 0 20px rgba(255, 20, 147, 0.4);
+    animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Apply theme colors to elements */
