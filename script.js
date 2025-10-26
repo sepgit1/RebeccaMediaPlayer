@@ -1231,10 +1231,15 @@ class MusicPlayer {
         this.audioMode = mode;
         liveStorage.set('audioMode', mode);
         
+        // Initialize audio context if not already done
+        if (!this.audioSource && this.audio) {
+            this.initializeAudioContext();
+        }
+        
         // Resume audio context if suspended (required by browsers)
         if (this.audioContext && this.audioContext.state === 'suspended') {
             this.audioContext.resume().then(() => {
-                console.log('Audio context resumed');
+                console.log('✓ Audio context resumed');
                 this.applyAudioModeEffects(mode);
             }).catch(err => console.log('Error resuming audio context:', err));
         } else {
