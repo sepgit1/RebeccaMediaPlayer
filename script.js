@@ -80,12 +80,53 @@ class MusicPlayer {
         this.fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
         this.clearAllBtn.addEventListener('click', () => this.clearAllSongs());
         
+        // Drag and drop
+        this.setupDragAndDrop();
+        
         // Search and sort
         this.searchInput.addEventListener('input', () => this.filterPlaylist());
         this.sortSelect.addEventListener('change', () => this.sortPlaylist());
         
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+    }
+
+    setupDragAndDrop() {
+        const dropZone = document.getElementById('dropZone');
+        
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        // Highlight drop zone when dragging over
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.add('drag-over');
+            });
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.remove('drag-over');
+            });
+        });
+        
+        // Handle dropped files
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            this.fileInput.files = files;
+            
+            // Trigger file upload handler
+            const event = new Event('change', { bubbles: true });
+            this.fileInput.dispatchEvent(event);
+        });
     }
 
     handleFileUpload(event) {

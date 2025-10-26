@@ -436,9 +436,22 @@ body {
     -webkit-backdrop-filter: blur(15px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
-    gap: 20px;
+    flex-direction: column;
+    gap: 15px;
     justify-content: center;
-    flex-wrap: wrap;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.upload-section.drag-over {
+    background: rgba(255, 20, 147, 0.2);
+    border-top: 2px solid rgba(255, 20, 147, 0.5);
+}
+
+.drop-hint {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
 }
 
 .upload-btn {

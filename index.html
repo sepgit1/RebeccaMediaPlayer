@@ -82,11 +82,12 @@
         </div>
 
         <!-- File Upload Section -->
-        <div class="upload-section">
+        <div class="upload-section" id="dropZone">
             <label for="fileInput" class="upload-btn">
-                📁 Add Songs
-                <input type="file" id="fileInput" accept="audio/*" multiple style="display: none;">
+                📁 Add Songs or Videos
+                <input type="file" id="fileInput" accept="audio/*,video/*" multiple style="display: none;">
             </label>
+            <p class="drop-hint">💡 Or drag & drop files here</p>
             <button id="clearAllBtn" class="clear-btn">🗑️ Clear All Songs</button>
         </div>
 
