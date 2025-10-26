@@ -340,7 +340,7 @@ class MusicPlayer {
 
     removeSong(index) {
         const adminPassword = prompt('🔐 Enter admin password to delete this song:');
-        if (adminPassword !== 'admin123') {
+        if (adminPassword !== 'Newpassadmin!') {
             if (adminPassword !== null) {
                 this.showNotification('❌ Incorrect password');
             }
@@ -379,7 +379,7 @@ class MusicPlayer {
 
     clearAllSongs() {
         const adminPassword = prompt('🔐 Enter admin password to clear all songs:');
-        if (adminPassword !== 'admin123') {
+        if (adminPassword !== 'Newpassadmin!') {
             if (adminPassword !== null) {
                 this.showNotification('❌ Incorrect password');
             }
@@ -825,7 +825,7 @@ class MusicPlayer {
         if (resetAppBtn) {
             resetAppBtn.addEventListener('click', () => {
                 const adminPassword = prompt('🔐 Enter admin password to reset app:');
-                if (adminPassword === 'admin123') {
+                if (adminPassword === 'Newpassadmin!') {
                     if (confirm('⚠️ Reset entire app? All songs will be deleted!')) {
                         localStorage.clear();
                         this.showNotification('🔄 App reset. Redirecting...');
