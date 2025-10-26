@@ -975,7 +975,7 @@ class MusicPlayer {
     // Settings Management
     loadSettings() {
         const savedTheme = localStorage.getItem('mediaPlayerTheme') || 'dark';
-        const savedColor = localStorage.getItem('mediaPlayerColor') || 'pink';
+        const savedColor = localStorage.getItem('mediaPlayerColor') || 'maroon';
         const savedAnimations = localStorage.getItem('mediaPlayerAnimations') !== 'false';
 
         this.applyTheme(savedTheme);
@@ -1139,7 +1139,7 @@ class MusicPlayer {
 
     applyColorScheme(color) {
         // Remove all color theme classes
-        ['pink', 'purple', 'blue', 'green', 'orange', 'red'].forEach(c => {
+        ['maroon', 'cyan', 'forest'].forEach(c => {
             document.body.classList.remove(`${c}-theme`);
         });
 
@@ -1148,12 +1148,12 @@ class MusicPlayer {
         localStorage.setItem('mediaPlayerColor', color);
 
         this.updateSettingsUI();
-        this.showNotification(`🎨 Color scheme changed`);
+        this.showNotification(`🎨 Color family changed`);
     }
 
     updateSettingsUI() {
         const currentTheme = localStorage.getItem('mediaPlayerTheme') || 'dark';
-        const currentColor = localStorage.getItem('mediaPlayerColor') || 'pink';
+        const currentColor = localStorage.getItem('mediaPlayerColor') || 'maroon';
 
         // Update theme buttons
         document.querySelectorAll('.theme-btn').forEach(btn => {
