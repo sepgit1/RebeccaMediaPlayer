@@ -1002,11 +1002,11 @@ class MusicPlayer {
     // Settings Management
     loadSettings() {
         const savedTheme = localStorage.getItem('mediaPlayerTheme') || 'dark';
-        const savedColor = localStorage.getItem('mediaPlayerColor') || 'maroon';
+        const savedColorFamily = localStorage.getItem('mediaPlayerColorFamily') || 'maroon';
         const savedAnimations = localStorage.getItem('mediaPlayerAnimations') !== 'false';
 
         this.applyTheme(savedTheme);
-        this.applyColorScheme(savedColor);
+        this.applyColorFamily(savedColorFamily);
         this.setupSettingsModal();
         this.updateAdminUI();
         
@@ -1067,8 +1067,13 @@ class MusicPlayer {
             });
         });
 
-        // Render and bind color family palette
-        this.renderColorFamilies();
+        // Bind color family buttons
+        document.querySelectorAll('.family-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const family = e.target.getAttribute('data-family');
+                this.applyColorFamily(family);
+            });
+        });
 
         // Update Settings button
         const updateSettingsBtn = document.getElementById('updateSettingsBtn');
@@ -1159,100 +1164,45 @@ class MusicPlayer {
         this.showNotification(`🌓 ${theme.charAt(0).toUpperCase() + theme.slice(1)} mode activated`);
     }
 
-    renderColorFamilies() {
-        const container = document.getElementById('colorFamilies');
-        if (!container) return;
-
-        container.innerHTML = '';
-
-        Object.entries(this.colorPalettes).forEach(([familyKey, palette]) => {
-            const familyGroup = document.createElement('div');
-            familyGroup.className = 'color-family-group';
-
-            const paletteDiv = document.createElement('div');
-            paletteDiv.className = 'color-palette';
-
-            ['dark', 'medium', 'light', 'accent'].forEach(variant => {
-                const colorBtn = document.createElement('div');
-                colorBtn.className = 'palette-color';
-                colorBtn.style.background = palette[variant];
-                colorBtn.title = `${palette.name} - ${variant}`;
-                colorBtn.dataset.family = familyKey;
-                colorBtn.dataset.variant = variant;
-
-                if (this.currentColorFamily === familyKey && localStorage.getItem('mediaPlayerColorVariant') === variant) {
-                    colorBtn.classList.add('active');
-                }
-
-                colorBtn.addEventListener('click', () => {
-                    this.applyColorFamily(familyKey, variant, palette);
-                });
-
-                paletteDiv.appendChild(colorBtn);
-            });
-
-            const label = document.createElement('div');
-            label.style.fontSize = '0.85rem';
-            label.style.color = 'rgba(255, 255, 255, 0.7)';
-            label.textContent = palette.name;
-
-            familyGroup.appendChild(paletteDiv);
-            familyGroup.appendChild(label);
-            container.appendChild(familyGroup);
-        });
-    }
-
-    applyColorFamily(familyKey, variant, palette) {
+    applyColorFamily(familyKey) {
+        const palette = this.colorPalettes[familyKey];
         this.currentColorFamily = familyKey;
         localStorage.setItem('mediaPlayerColorFamily', familyKey);
-        localStorage.setItem('mediaPlayerColorVariant', variant);
 
-        // Update CSS custom properties
-        document.documentElement.style.setProperty('--primary-color', palette[variant]);
-        document.documentElement.style.setProperty('--secondary-color', palette.dark);
-        document.documentElement.style.setProperty('--tertiary-color', palette.light);
+        // Cycle through all 4 colors in the family
+        const colors = [palette.dark, palette.medium, palette.light, palette.accent];
+
+        // Update CSS custom properties with the family colors
+        document.documentElement.style.setProperty('--primary-color', palette.light);
+        document.documentElement.style.setProperty('--secondary-color', palette.medium);
+        document.documentElement.style.setProperty('--tertiary-color', palette.dark);
+        document.documentElement.style.setProperty('--accent-color', palette.accent);
 
         // Update active button states
-        document.querySelectorAll('.palette-color').forEach(btn => {
+        document.querySelectorAll('.family-btn').forEach(btn => {
             btn.classList.remove('active');
-            if (btn.dataset.family === familyKey && btn.dataset.variant === variant) {
+            if (btn.getAttribute('data-family') === familyKey) {
                 btn.classList.add('active');
             }
         });
 
-        // Update dynamic shapes colors
-        this.updateShapesColors(palette);
+        // Update dynamic shapes colors to use all 4 colors from family
+        this.updateShapesColors(colors);
 
-        this.showNotification(`🎨 Color changed to ${palette.name} - ${variant}`);
+        this.showNotification(`🎨 Switched to ${palette.name} family`);
     }
 
-    updateShapesColors(palette) {
+    updateShapesColors(colors) {
         // Update canvas shape colors to match the new palette
         const shapes = this.shapes || [];
         shapes.forEach(shape => {
-            const variants = [palette.dark, palette.medium, palette.light, palette.accent];
-            shape.color = variants[Math.floor(Math.random() * variants.length)];
+            shape.color = colors[Math.floor(Math.random() * colors.length)];
         });
-    }
-
-
-    applyColorScheme(color) {
-        // Remove all color theme classes
-        ['maroon', 'cyan', 'forest'].forEach(c => {
-            document.body.classList.remove(`${c}-theme`);
-        });
-
-        // Add the selected color theme
-        document.body.classList.add(`${color}-theme`);
-        localStorage.setItem('mediaPlayerColor', color);
-
-        this.updateSettingsUI();
-        this.showNotification(`🎨 Color family changed`);
     }
 
     updateSettingsUI() {
         const currentTheme = localStorage.getItem('mediaPlayerTheme') || 'dark';
-        const currentColor = localStorage.getItem('mediaPlayerColor') || 'maroon';
+        const currentColorFamily = localStorage.getItem('mediaPlayerColorFamily') || 'maroon';
 
         // Update theme buttons
         document.querySelectorAll('.theme-btn').forEach(btn => {
@@ -1262,10 +1212,10 @@ class MusicPlayer {
             }
         });
 
-        // Update color buttons
-        document.querySelectorAll('.color-btn').forEach(btn => {
+        // Update family buttons
+        document.querySelectorAll('.family-btn').forEach(btn => {
             btn.classList.remove('active');
-            if (btn.getAttribute('data-color') === currentColor) {
+            if (btn.getAttribute('data-family') === currentColorFamily) {
                 btn.classList.add('active');
             }
         });
