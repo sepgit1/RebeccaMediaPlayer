@@ -247,36 +247,69 @@ class MusicPlayer {
         fetch('videos/manifest.json')
             .then(response => response.json())
             .then(videos => {
-                // Check if videos already exist in localStorage
-                const videoTitles = videos.map(v => v.title);
-                const existingTitles = this.songs.map(s => s.name);
+                // Get the current manifest version
+                const currentManifestVersion = localStorage.getItem('manifestVersion') || '1.0';
+                const newManifestVersion = '2.0'; // Updated when playlist changes
                 
-                // Add only videos that don't already exist
-                const newVideos = videos.filter(video => 
-                    !existingTitles.includes(video.title)
-                );
-                
-                if (newVideos.length > 0) {
-                    // Convert to the format expected by the app
-                    const formattedVideos = newVideos.map(video => ({
+                // If manifest has been updated, reload all videos in new order
+                if (currentManifestVersion !== newManifestVersion) {
+                    console.log('Manifest updated - reloading all videos in new order');
+                    
+                    // Remove any old videos from songs
+                    this.songs = this.songs.filter(song => !song.isVideo);
+                    
+                    // Add all videos from manifest in the correct order
+                    const formattedVideos = videos.map(video => ({
                         name: video.title,
                         artist: video.artist,
-                        url: video.path, // Use url property for playback
+                        url: video.path,
                         isVideo: true,
                         dateAdded: video.dateAdded,
                         duration: 0
                     }));
                     
-                    // Add to playlist
-                    this.songs = [...this.songs, ...formattedVideos];
+                    // Add videos at the beginning (top of list)
+                    this.songs = [...formattedVideos, ...this.songs];
                     localStorage.setItem('musicPlayerSongs', JSON.stringify(this.songs));
+                    localStorage.setItem('manifestVersion', newManifestVersion);
                     
-                    // Refresh the display
                     this.loadPlaylist();
                     this.updateSongCounter();
                     this.checkEmptyState();
                     
-                    this.showNotification(`✨ Added ${newVideos.length} Becca's videos!`);
+                    this.showNotification(`✨ Playlist updated with ${videos.length} songs!`);
+                } else {
+                    // Check if videos already exist in localStorage
+                    const videoTitles = videos.map(v => v.title);
+                    const existingTitles = this.songs.map(s => s.name);
+                    
+                    // Add only videos that don't already exist
+                    const newVideos = videos.filter(video => 
+                        !existingTitles.includes(video.title)
+                    );
+                    
+                    if (newVideos.length > 0) {
+                        // Convert to the format expected by the app
+                        const formattedVideos = newVideos.map(video => ({
+                            name: video.title,
+                            artist: video.artist,
+                            url: video.path,
+                            isVideo: true,
+                            dateAdded: video.dateAdded,
+                            duration: 0
+                        }));
+                        
+                        // Add to playlist
+                        this.songs = [...this.songs, ...formattedVideos];
+                        localStorage.setItem('musicPlayerSongs', JSON.stringify(this.songs));
+                        
+                        // Refresh the display
+                        this.loadPlaylist();
+                        this.updateSongCounter();
+                        this.checkEmptyState();
+                        
+                        this.showNotification(`✨ Added ${newVideos.length} new songs!`);
+                    }
                 }
             })
             .catch(error => {
