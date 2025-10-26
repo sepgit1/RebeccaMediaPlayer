@@ -69,19 +69,16 @@
             </div>
         </div>
 
-        <!-- Video Player (Embedded, not fullscreen) -->
-        <!-- Video Player (Embedded, NOT fullscreen) -->
-        <div id="videoContainer" class="video-container-embedded" style="display: none;">
-            <div class="video-header">
-                <span>Now Playing Video</span>
-                <div class="video-controls">
-                    <button id="minimizeVideoBtn" class="video-btn" title="Close video">✕</button>
-                </div>
-            </div>
-            <div id="videoWrapper" class="video-wrapper">
-                <video id="videoPlayer" class="video-element" style="width: 100%; height: 100%; object-fit: contain;">
+        <!-- Video Player (YouTube-style embedded box) -->
+        <div id="videoContainer" class="video-container-box" style="display: none;">
+            <div class="video-box-wrapper">
+                <video id="videoPlayer" class="video-box-player">
                     Your browser does not support the video tag.
                 </video>
+                <div class="video-box-controls">
+                    <button id="expandVideoBtn" class="video-expand-btn" title="Expand video">⛶ Expand</button>
+                    <button id="closeVideoBtn" class="video-close-btn" title="Close video">✕</button>
+                </div>
             </div>
         </div>
 

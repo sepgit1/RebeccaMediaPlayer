@@ -93,10 +93,15 @@ class MusicPlayer {
         this.sortSelect.addEventListener('change', () => this.sortPlaylist());
         
         // Video controls - DISABLE FULLSCREEN
-        const minimizeVideoBtn = document.getElementById('minimizeVideoBtn');
+        const expandVideoBtn = document.getElementById('expandVideoBtn');
+        const closeVideoBtn = document.getElementById('closeVideoBtn');
         
-        if (minimizeVideoBtn) {
-            minimizeVideoBtn.addEventListener('click', () => {
+        if (expandVideoBtn) {
+            expandVideoBtn.addEventListener('click', () => this.expandVideoFullscreen());
+        }
+        
+        if (closeVideoBtn) {
+            closeVideoBtn.addEventListener('click', () => {
                 this.video.pause();
                 this.videoContainer.style.display = 'none';
             });
@@ -381,32 +386,6 @@ class MusicPlayer {
                 this.video.src = song.url;
                 this.video.load();
                 
-                // CRITICAL: Strip all fullscreen capabilities
-                this.video.removeAttribute('allowfullscreen');
-                this.video.removeAttribute('webkitallowfullscreen');
-                this.video.removeAttribute('mozallowfullscreen');
-                this.video.removeAttribute('msallowfullscreen');
-                this.video.removeAttribute('oallowfullscreen');
-                
-                // Prevent any fullscreen requests
-                this.video.setAttribute('controlsList', 'nofullscreen');
-                
-                // Disable all interaction methods that could trigger fullscreen
-                this.video.style.touchAction = 'none';
-                this.video.ondblclick = (e) => e.preventDefault();
-                this.video.onmouseenter = () => {
-                    // Remove any context menu that might allow fullscreen
-                    this.video.oncontextmenu = (e) => e.preventDefault();
-                };
-                
-                // Prevent keyboard shortcuts for fullscreen
-                this.video.addEventListener('keydown', (e) => {
-                    if (e.key === 'f' || e.key === 'F') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }
-                });
-                
                 this.video.play().then(() => {
                     this.isPlaying = true;
                     this.updatePlayButton();
@@ -430,6 +409,51 @@ class MusicPlayer {
                 });
             }
         }
+    }
+
+    expandVideoFullscreen() {
+        // Create fullscreen container
+        const fullscreenDiv = document.createElement('div');
+        fullscreenDiv.className = 'video-fullscreen';
+        fullscreenDiv.id = 'videoFullscreenContainer';
+        
+        // Create wrapper
+        const wrapper = document.createElement('div');
+        wrapper.className = 'video-fullscreen-wrapper';
+        
+        // Clone video and set source
+        const fullscreenVideo = document.createElement('video');
+        fullscreenVideo.className = 'video-fullscreen-player';
+        fullscreenVideo.src = this.video.src;
+        fullscreenVideo.currentTime = this.video.currentTime;
+        
+        // Create close button
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'video-fullscreen-close-btn';
+        closeBtn.innerHTML = '✕';
+        closeBtn.addEventListener('click', () => {
+            // Exit fullscreen
+            fullscreenDiv.remove();
+            // Sync time back to original video
+            this.video.currentTime = fullscreenVideo.currentTime;
+            // Resume playing original if it was playing
+            if (this.isPlaying) {
+                this.video.play().catch(() => {});
+            }
+            this.showNotification('Exited fullscreen');
+        });
+        
+        wrapper.appendChild(fullscreenVideo);
+        fullscreenDiv.appendChild(wrapper);
+        fullscreenDiv.appendChild(closeBtn);
+        
+        document.body.appendChild(fullscreenDiv);
+        
+        // Pause original and play fullscreen version
+        this.video.pause();
+        fullscreenVideo.play().catch(() => {});
+        
+        this.showNotification('📺 Fullscreen mode - Click ✕ to exit');
     }
 
     isAdmin() {
