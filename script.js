@@ -699,6 +699,17 @@ class MusicPlayer {
             });
         });
 
+        // Update Settings button
+        const updateSettingsBtn = document.getElementById('updateSettingsBtn');
+        if (updateSettingsBtn) {
+            updateSettingsBtn.addEventListener('click', () => {
+                this.showNotification('✓ Settings updated successfully');
+                setTimeout(() => {
+                    settingsModal.style.display = 'none';
+                }, 1000);
+            });
+        }
+
         // Update active states
         this.updateSettingsUI();
 

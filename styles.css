@@ -1264,6 +1264,35 @@ body::after {
     accent-color: #ff1493;
 }
 
+.update-btn {
+    width: 100%;
+    padding: 14px 20px;
+    margin-top: 15px;
+    background: linear-gradient(135deg,
+        rgba(255, 20, 147, 0.5),
+        rgba(138, 43, 226, 0.4));
+    color: #ffffff;
+    border: 1px solid rgba(255, 20, 147, 0.3);
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.2);
+}
+
+.update-btn:hover {
+    background: linear-gradient(135deg,
+        rgba(255, 20, 147, 0.6),
+        rgba(138, 43, 226, 0.5));
+    box-shadow: 0 6px 20px rgba(255, 20, 147, 0.3);
+    transform: translateY(-2px);
+}
+
+.update-btn:active {
+    transform: translateY(0);
+}
+
 /* Theme Variables */
 :root {
     --primary-color: #ff1493;
