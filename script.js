@@ -14,6 +14,7 @@ class MusicPlayer {
         this.checkEmptyState();
         this.loadSettings();
         this.displayUserName();
+        this.loadBeccaVideos();
         
         // PWA install prompt
         this.initializePWA();
@@ -202,6 +203,48 @@ class MusicPlayer {
         });
         
         this.highlightCurrentSong();
+    }
+
+    loadBeccaVideos() {
+        // Load Becca's videos from manifest
+        fetch('videos/manifest.json')
+            .then(response => response.json())
+            .then(videos => {
+                // Check if videos already exist in localStorage
+                const videoTitles = videos.map(v => v.title);
+                const existingTitles = this.songs.map(s => s.name);
+                
+                // Add only videos that don't already exist
+                const newVideos = videos.filter(video => 
+                    !existingTitles.includes(video.title)
+                );
+                
+                if (newVideos.length > 0) {
+                    // Convert to the format expected by the app
+                    const formattedVideos = newVideos.map(video => ({
+                        name: video.title,
+                        artist: video.artist,
+                        url: video.path, // Use url property for playback
+                        isVideo: true,
+                        dateAdded: video.dateAdded,
+                        duration: 0
+                    }));
+                    
+                    // Add to playlist
+                    this.songs = [...this.songs, ...formattedVideos];
+                    localStorage.setItem('musicPlayerSongs', JSON.stringify(this.songs));
+                    
+                    // Refresh the display
+                    this.loadPlaylist();
+                    this.updateSongCounter();
+                    this.checkEmptyState();
+                    
+                    this.showNotification(`✨ Added ${newVideos.length} Becca's videos!`);
+                }
+            })
+            .catch(error => {
+                console.log('Videos not loaded (this is normal if not deployed yet):', error);
+            });
     }
 
     escapeHtml(text) {
