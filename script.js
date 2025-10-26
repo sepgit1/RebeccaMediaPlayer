@@ -5,7 +5,7 @@ class MusicPlayer {
         this.isPlaying = false;
         this.isShuffled = false;
         this.isRepeating = false;
-        this.maxSongs = 100;
+        this.maxSongs = 500;
         
         this.initializeElements();
         this.bindEvents();
@@ -18,8 +18,11 @@ class MusicPlayer {
     }
 
     initializeElements() {
-        // Audio element
+        // Audio/Video elements
         this.audio = document.getElementById('audioPlayer');
+        this.video = document.getElementById('videoPlayer');
+        this.videoContainer = document.getElementById('videoContainer');
+        this.mediaIcon = document.getElementById('mediaIcon');
         
         // Control elements
         this.playPauseBtn = document.getElementById('playPauseBtn');
@@ -64,6 +67,12 @@ class MusicPlayer {
         this.repeatBtn.addEventListener('click', () => this.toggleRepeat());
         this.volumeSlider.addEventListener('input', () => this.updateVolume());
         
+        // Update button
+        const updateBtn = document.getElementById('updateBtn');
+        if (updateBtn) {
+            updateBtn.addEventListener('click', () => this.checkForUpdates());
+        }
+        
         // Progress bar click
         this.progressBar.addEventListener('click', (e) => this.seekTo(e));
         
@@ -81,21 +90,25 @@ class MusicPlayer {
 
     handleFileUpload(event) {
         const files = Array.from(event.target.files);
-        const audioFiles = files.filter(file => file.type.startsWith('audio/'));
+        const mediaFiles = files.filter(file => 
+            file.type.startsWith('audio/') || file.type.startsWith('video/')
+        );
         
-        if (this.songs.length + audioFiles.length > this.maxSongs) {
-            alert(`You can only have up to ${this.maxSongs} songs. You're trying to add ${audioFiles.length} songs but only have ${this.maxSongs - this.songs.length} slots available.`);
+        if (this.songs.length + mediaFiles.length > this.maxSongs) {
+            alert(`You can only have up to ${this.maxSongs} items. You're trying to add ${mediaFiles.length} but only have ${this.maxSongs - this.songs.length} slots available.`);
             return;
         }
 
-        audioFiles.forEach(file => {
+        mediaFiles.forEach(file => {
             const url = URL.createObjectURL(file);
+            const isVideo = file.type.startsWith('video/');
             const song = {
                 id: Date.now() + Math.random(),
                 name: file.name.replace(/\.[^/.]+$/, ""), // Remove file extension
-                artist: 'Unknown Artist',
+                artist: isVideo ? '🎬 Video' : 'Unknown Artist',
                 url: url,
                 file: file,
+                isVideo: isVideo,
                 dateAdded: new Date().toISOString()
             };
             
@@ -168,20 +181,40 @@ class MusicPlayer {
         if (index >= 0 && index < this.songs.length) {
             this.currentSongIndex = index;
             const song = this.songs[index];
+            const isVideo = song.isVideo || false;
             
-            this.audio.src = song.url;
             this.currentSongTitle.textContent = song.name;
             this.currentSongArtist.textContent = song.artist;
             
-            this.audio.load();
-            this.audio.play().then(() => {
-                this.isPlaying = true;
-                this.updatePlayButton();
-                this.highlightCurrentSong();
-            }).catch(error => {
-                console.error('Error playing song:', error);
-                this.showNotification('Error playing this song. It might be corrupted.');
-            });
+            // Toggle between audio and video player
+            if (isVideo) {
+                this.audio.pause();
+                this.videoContainer.style.display = 'block';
+                this.mediaIcon.textContent = '🎬';
+                this.video.src = song.url;
+                this.video.load();
+                this.video.play().then(() => {
+                    this.isPlaying = true;
+                    this.updatePlayButton();
+                    this.highlightCurrentSong();
+                }).catch(error => {
+                    console.error('Error playing video:', error);
+                    this.showNotification('Error playing this video. It might be corrupted.');
+                });
+            } else {
+                this.videoContainer.style.display = 'none';
+                this.mediaIcon.textContent = '🎵';
+                this.audio.src = song.url;
+                this.audio.load();
+                this.audio.play().then(() => {
+                    this.isPlaying = true;
+                    this.updatePlayButton();
+                    this.highlightCurrentSong();
+                }).catch(error => {
+                    console.error('Error playing song:', error);
+                    this.showNotification('Error playing this song. It might be corrupted.');
+                });
+            }
         }
     }
 
@@ -255,17 +288,21 @@ class MusicPlayer {
             return;
         }
 
-        if (this.audio.src === '' || this.audio.src === window.location.href) {
+        const song = this.songs[this.currentSongIndex];
+        const isVideo = song && (song.isVideo || false);
+        const mediaElement = isVideo ? this.video : this.audio;
+
+        if (mediaElement.src === '' || mediaElement.src === window.location.href) {
             this.playSong(this.currentSongIndex);
         } else {
             if (this.isPlaying) {
-                this.audio.pause();
+                mediaElement.pause();
                 this.isPlaying = false;
             } else {
-                this.audio.play().then(() => {
+                mediaElement.play().then(() => {
                     this.isPlaying = true;
                 }).catch(error => {
-                    console.error('Error playing song:', error);
+                    console.error('Error playing media:', error);
                 });
             }
             this.updatePlayButton();
@@ -511,6 +548,25 @@ class MusicPlayer {
                     console.log('Service Worker registration failed:', error);
                 });
         }
+    }
+
+    checkForUpdates() {
+        // Clear service worker cache
+        if ('caches' in window) {
+            caches.keys().then(cacheNames => {
+                cacheNames.forEach(cacheName => {
+                    caches.delete(cacheName);
+                });
+            });
+        }
+
+        // Clear browser cache and reload
+        this.showNotification('🔄 Updating app... Please wait');
+        
+        // Force a hard refresh
+        setTimeout(() => {
+            location.reload(true);
+        }, 500);
     }
 }
 

@@ -1,32 +1,40 @@
 # 💖 Rebecca Media Player 💖
 
-An elegant, futuristic media player with a stunning glass chrome aesthetic and beautiful pink fuchsia accents. This Progressive Web App (PWA) can store up to 100 songs locally on the device.
+An elegant, futuristic media player with a stunning glass chrome aesthetic and beautiful pink fuchsia accents. This Progressive Web App (PWA) can store up to 500 songs **and videos** locally on the device.
 
 ## ✨ Features
 
-- 💖 **Rebecca's Signature Design**: Elegant glass chrome aesthetic with pink fuchsia accents
+- 💖 **Rebecca's Signature Design**: Elegant glass chrome aesthetic with maroon and white theme
+- 🎵 **Audio & Video Support**: Play both music and videos in one player
 - 🔮 **Futuristic Geometric Icons**: Modern tech-inspired icon design with glowing effects
-- 🎵 **Up to 100 Songs**: Store your favorite music locally on device
+- 🎵 **Up to 500 Media Items**: Store your favorite music and videos locally on device
 - 📱 **Progressive Web App**: Install like a regular app on phones, tablets, and computers
 - 🔮 **Glass Morphism UI**: Modern translucent design with backdrop blur effects
-- 🌈 **Pink Fuchsia Theme**: Beautiful feminine color palette throughout
-- 🎶 **Full Audio Controls**: Play, pause, skip, shuffle, repeat with elegant controls
+- 🌈 **Maroon & White Theme**: Sophisticated and elegant color palette
+- 🎶 **Full Media Controls**: Play, pause, skip, shuffle, repeat with elegant controls
 - 🔊 **Volume Control**: Smooth volume adjustment with custom styling
-- 📋 **Playlist Management**: Add, remove, search, and sort songs
+- 📋 **Playlist Management**: Add, remove, search, and sort media
 - 💾 **Offline Ready**: Works without internet after installation
 - 📱 **Mobile Responsive**: Perfect on all screen sizes
 - ⌨️ **Keyboard Shortcuts**: Spacebar to play/pause, arrow keys to skip
 
 ## 🚀 How to Use
 
-### Adding Songs
+### Adding Media (Music & Videos)
 1. Click the "📁 Add Songs" button
-2. Select audio files from your device (MP3, WAV, AAC, OGG, M4A, FLAC, WMA)
-3. Songs will be added to your playlist automatically
+2. Select audio **or video** files from your device
+3. Media will be added to your playlist automatically
 4. **Tip**: You can select multiple files at once by holding Ctrl (or Cmd on Mac)
 
+#### Supported Formats
+**Audio:**
+- MP3, WAV, AAC, OGG, M4A, FLAC, WMA
+
+**Video:**
+- MP4, WebM, Ogg, MOV, AVI
+
 #### Bulk Upload Helper
-For adding many songs at once:
+For adding many files at once:
 1. Download or create the `song-upload-helper.bat` file
 2. Place it in your music folder
 3. Run the batch file to see all your audio files

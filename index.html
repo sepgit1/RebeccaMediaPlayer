@@ -35,15 +35,22 @@
         <header class="header">
             <h1>💖Rebecca Media Player💖</h1>
             <div class="song-counter">
-                <span id="songCount">0</span> / 100 songs
+                <span id="songCount">0</span> / 500 items
             </div>
         </header>
+
+        <!-- Video Player (Hidden by default) -->
+        <div id="videoContainer" class="video-container" style="display: none;">
+            <video id="videoPlayer" controls>
+                Your browser does not support the video tag.
+            </video>
+        </div>
 
         <!-- Music Controls -->
         <div class="player-section">
             <div class="current-song">
                 <div class="song-art">
-                    <div class="music-note">🎵</div>
+                    <div class="music-note" id="mediaIcon">🎵</div>
                 </div>
                 <div class="song-info">
                     <h2 id="currentSongTitle">No song selected</h2>
@@ -65,6 +72,7 @@
                 <button id="nextBtn" class="control-btn">⏭️</button>
                 <button id="shuffleBtn" class="control-btn">🔀</button>
                 <button id="repeatBtn" class="control-btn">🔁</button>
+                <button id="updateBtn" class="control-btn" title="Update App">🔄</button>
             </div>
 
             <div class="volume-container">
