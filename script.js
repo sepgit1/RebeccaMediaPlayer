@@ -181,9 +181,6 @@ class MusicPlayer {
             const li = document.createElement('li');
             li.className = 'playlist-item';
             
-            const deleteButton = this.isAdmin() ? 
-                `<button class="action-btn" onclick="musicPlayer.removeSong(${index})" title="Remove">🗑️</button>` : '';
-            
             li.innerHTML = `
                 <div class="song-details">
                     <h4>${this.escapeHtml(song.name)}</h4>
@@ -191,7 +188,7 @@ class MusicPlayer {
                 </div>
                 <div class="song-actions">
                     <button class="action-btn" onclick="musicPlayer.playSong(${index})" title="Play">▶️</button>
-                    ${deleteButton}
+                    <button class="action-btn" onclick="musicPlayer.removeSong(${index})" title="Remove">🗑️</button>
                 </div>
             `;
             
@@ -259,8 +256,11 @@ class MusicPlayer {
     }
 
     removeSong(index) {
-        if (!this.isAdmin()) {
-            this.showNotification('❌ Only admins can delete songs');
+        const adminPassword = prompt('🔐 Enter admin password to delete this song:');
+        if (adminPassword !== 'admin123') {
+            if (adminPassword !== null) {
+                this.showNotification('❌ Incorrect password');
+            }
             return;
         }
 
@@ -295,8 +295,11 @@ class MusicPlayer {
     }
 
     clearAllSongs() {
-        if (!this.isAdmin()) {
-            this.showNotification('❌ Only admins can clear all songs');
+        const adminPassword = prompt('🔐 Enter admin password to clear all songs:');
+        if (adminPassword !== 'admin123') {
+            if (adminPassword !== null) {
+                this.showNotification('❌ Incorrect password');
+            }
             return;
         }
 
@@ -644,10 +647,8 @@ class MusicPlayer {
     }
 
     updateAdminUI() {
-        // Hide clear all button for non-admins
-        if (!this.isAdmin()) {
-            this.clearAllBtn.style.display = 'none';
-        }
+        // Show clear all button to everyone (password protected)
+        this.clearAllBtn.style.display = 'block';
     }
 
     setupSettingsModal() {
@@ -706,14 +707,13 @@ class MusicPlayer {
     }
 
     setupAdminPanel() {
-        if (!this.isAdmin()) return;
-
+        // Always show admin panel to all users
         const adminPanel = document.getElementById('adminPanel');
         if (adminPanel) {
             adminPanel.style.display = 'block';
         }
 
-        // Clear cache button
+        // Clear cache button - visible to all
         const clearCacheBtn = document.getElementById('clearCacheBtn');
         if (clearCacheBtn) {
             clearCacheBtn.addEventListener('click', () => {
@@ -726,14 +726,19 @@ class MusicPlayer {
             });
         }
 
-        // Reset app button
+        // Reset app button - requires admin password
         const resetAppBtn = document.getElementById('resetAppBtn');
         if (resetAppBtn) {
             resetAppBtn.addEventListener('click', () => {
-                if (confirm('⚠️ Reset entire app? All songs will be deleted!')) {
-                    localStorage.clear();
-                    this.showNotification('🔄 App reset. Redirecting...');
-                    setTimeout(() => location.reload(), 1000);
+                const adminPassword = prompt('🔐 Enter admin password to reset app:');
+                if (adminPassword === 'admin123') {
+                    if (confirm('⚠️ Reset entire app? All songs will be deleted!')) {
+                        localStorage.clear();
+                        this.showNotification('🔄 App reset. Redirecting...');
+                        setTimeout(() => location.reload(), 1000);
+                    }
+                } else if (adminPassword !== null) {
+                    this.showNotification('❌ Incorrect admin password');
                 }
             });
         }
