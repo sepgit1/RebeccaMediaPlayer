@@ -1,11 +1,13 @@
 class MusicPlayer {
     constructor() {
         this.songs = JSON.parse(localStorage.getItem('musicPlayerSongs')) || [];
+        this.comments = JSON.parse(localStorage.getItem('musicPlayerComments')) || {};
         this.currentSongIndex = 0;
         this.isPlaying = false;
         this.isShuffled = false;
         this.isRepeating = false;
         this.maxSongs = 500;
+        this.ccEnabled = false;
         
         this.initializeElements();
         this.bindEvents();
@@ -78,6 +80,23 @@ class MusicPlayer {
         // Search and sort
         this.searchInput.addEventListener('input', () => this.filterPlaylist());
         this.sortSelect.addEventListener('change', () => this.sortPlaylist());
+        
+        // Closed Captions and Comments
+        const ccBtn = document.getElementById('ccBtn');
+        const closeCcBtn = document.getElementById('closeCcBtn');
+        const postCommentBtn = document.getElementById('postCommentBtn');
+        
+        if (ccBtn) {
+            ccBtn.addEventListener('click', () => this.toggleCC());
+        }
+        
+        if (closeCcBtn) {
+            closeCcBtn.addEventListener('click', () => this.hideCC());
+        }
+        
+        if (postCommentBtn) {
+            postCommentBtn.addEventListener('click', () => this.addComment());
+        }
         
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => this.handleKeyboard(e));
@@ -261,6 +280,8 @@ class MusicPlayer {
             
             this.currentSongTitle.textContent = song.name;
             this.currentSongArtist.textContent = song.artist;
+            this.updateCCText(song.name);
+            this.displayComments();
             
             // Toggle between audio and video player
             if (isVideo) {
@@ -864,6 +885,103 @@ class MusicPlayer {
                 btn.classList.add('active');
             }
         });
+    }
+
+    displayUserName() {
+        const userName = sessionStorage.getItem('userName') || 'User';
+        const userNameElement = document.getElementById('userName');
+        if (userNameElement) {
+            userNameElement.textContent = `👤 ${userName}`;
+        }
+    }
+
+    toggleCC() {
+        const ccDisplay = document.getElementById('ccDisplay');
+        this.ccEnabled = !this.ccEnabled;
+        
+        if (this.ccEnabled) {
+            ccDisplay.style.display = 'block';
+            this.showNotification('CC enabled');
+            const currentSong = this.songs[this.currentSongIndex];
+            if (currentSong) {
+                this.updateCCText(currentSong.name);
+            }
+        } else {
+            ccDisplay.style.display = 'none';
+            this.showNotification('CC disabled');
+        }
+    }
+
+    hideCC() {
+        const ccDisplay = document.getElementById('ccDisplay');
+        ccDisplay.style.display = 'none';
+        this.ccEnabled = false;
+    }
+
+    updateCCText(songName) {
+        if (!this.ccEnabled) return;
+        
+        const ccText = document.getElementById('ccText');
+        ccText.textContent = `♪ ${songName} ♪`;
+    }
+
+    addComment() {
+        const commentInput = document.getElementById('commentInput');
+        const commentText = commentInput.value.trim();
+        
+        if (!commentText) {
+            this.showNotification('Please enter a comment');
+            return;
+        }
+        
+        const currentSong = this.songs[this.currentSongIndex];
+        if (!currentSong) {
+            this.showNotification('Please select a song first');
+            return;
+        }
+        
+        const songId = currentSong.name + '_' + currentSong.artist;
+        
+        if (!this.comments[songId]) {
+            this.comments[songId] = [];
+        }
+        
+        const comment = {
+            text: commentText,
+            author: sessionStorage.getItem('userName') || 'Anonymous',
+            timestamp: new Date().toLocaleString()
+        };
+        
+        this.comments[songId].push(comment);
+        localStorage.setItem('musicPlayerComments', JSON.stringify(this.comments));
+        
+        commentInput.value = '';
+        this.displayComments();
+        this.showNotification('✓ Comment posted!');
+    }
+
+    displayComments() {
+        const currentSong = this.songs[this.currentSongIndex];
+        if (!currentSong) return;
+        
+        const songId = currentSong.name + '_' + currentSong.artist;
+        const commentsList = document.getElementById('commentsList');
+        const songComments = this.comments[songId] || [];
+        
+        if (songComments.length === 0) {
+            commentsList.innerHTML = '<p class="no-comments">No comments yet. Be the first to comment!</p>';
+            return;
+        }
+        
+        commentsList.innerHTML = songComments.map(comment => `
+            <div class="comment-item">
+                <div class="comment-header">
+                    <span class="comment-author">${this.escapeHtml(comment.author)}</span>
+                    <span class="comment-time">${comment.timestamp}</span>
+                </div>
+                <div class="comment-text">${this.escapeHtml(comment.text)}</div>
+            </div>
+        `).join('');
     }
 
     displayUserName() {
