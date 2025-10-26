@@ -673,23 +673,26 @@ body::after {
     width: 60px;
     height: 60px;
     border: none;
-    border-radius: 50%;
+    border-radius: 50% !important;
     font-size: 1.6rem;
     cursor: pointer;
     transition: all 0.3s ease;
     background: rgba(128, 0, 0, 0.7);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    color: #ffffff;
+    color: #ffffff !important;
     box-shadow:
         0 8px 25px rgba(0, 0, 0, 0.4),
         0 0 0 1px rgba(255, 255, 255, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.15);
     position: relative;
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    min-width: 60px !important;
+    min-height: 60px !important;
 }
 
 .control-btn::before {
@@ -724,7 +727,7 @@ body::after {
     width: 80px;
     height: 80px;
     font-size: 2.2rem;
-    color: #ffffff;
+    color: #ffffff !important;
     background: linear-gradient(135deg,
         rgba(128, 0, 0, 0.8),
         rgba(139, 0, 0, 0.7),
@@ -733,9 +736,13 @@ body::after {
         0 10px 30px rgba(128, 0, 0, 0.4),
         0 0 0 1px rgba(255, 255, 255, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    min-width: 80px !important;
+    min-height: 80px !important;
 }
 
 .control-btn.active {
@@ -1517,12 +1524,20 @@ body::after {
         width: 60px;
         height: 60px;
         font-size: 1.5rem;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        min-width: 60px !important;
+        min-height: 60px !important;
     }
 
     .play-pause {
         width: 75px;
         height: 75px;
         font-size: 2rem;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        min-width: 75px !important;
+        min-height: 75px !important;
     }
 
     .playlist-controls {
