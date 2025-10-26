@@ -102,7 +102,7 @@ body::after {
     overflow: hidden;
     position: relative;
     border: 1px solid rgba(255, 20, 147, 0.15);
-    z-index: 1;
+    z-index: 10;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -1909,65 +1909,53 @@ body::after {
 
 /* Light Theme */
 body.light-theme {
-    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 50%, #f0f0f0 100%);
+    background: linear-gradient(135deg, #f8f8f8 0%, #efefef 50%, #f5f5f5 100%);
     color: var(--dark-text);
 }
 
 body.light-theme::before,
 body.light-theme::after {
-    opacity: 0.3;
+    opacity: 0.15;
 }
 
 body.light-theme .container {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.98);
     color: var(--dark-text);
-    border-color: var(--primary-color, #ff1493);
+    border-color: rgba(128, 0, 0, 0.3);
 }
 
 body.light-theme .header {
     background: linear-gradient(135deg,
-        rgba(255, 105, 180, 0.08) 0%,
-        rgba(255, 20, 147, 0.05) 50%,
-        rgba(138, 43, 226, 0.08) 100%);
+        rgba(128, 0, 0, 0.05) 0%,
+        rgba(139, 0, 0, 0.03) 50%,
+        rgba(160, 82, 82, 0.05) 100%);
     color: var(--dark-text);
-    border-bottom-color: var(--primary-color, #ff1493);
+    border-bottom-color: rgba(128, 0, 0, 0.2);
 }
 
 body.light-theme .header h1 {
-    color: var(--dark-text);
+    color: #333333;
 }
 
 body.light-theme .song-counter {
-    background: rgba(255, 20, 147, 0.1);
+    background: rgba(128, 0, 0, 0.08);
     color: var(--dark-text);
-    border-color: rgba(255, 20, 147, 0.2);
-}
-
-body.light-theme .visualizer-container {
-    background: linear-gradient(180deg,
-        rgba(255, 20, 147, 0.08) 0%,
-        rgba(138, 43, 226, 0.05) 100%);
-    border-bottom-color: var(--primary-color, #ff1493);
-}
-
-body.light-theme .visualizer .bar {
-    box-shadow: 
-        0 0 15px rgba(255, 20, 147, 0.5),
-        0 0 30px rgba(255, 105, 180, 0.2);
+    border-color: rgba(128, 0, 0, 0.15);
 }
 
 body.light-theme .control-btn,
 body.light-theme .upload-btn,
 body.light-theme .clear-btn {
-    background: rgba(0, 0, 0, 0.05);
-    color: var(--dark-text);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(128, 0, 0, 0.7);
+    color: #ffffff;
+    border: 1px solid rgba(128, 0, 0, 0.8);
+    border-radius: 50% !important;
 }
 
 body.light-theme .control-btn:hover,
 body.light-theme .upload-btn:hover {
-    background: rgba(255, 20, 147, 0.15);
-    color: var(--dark-text);
+    background: rgba(128, 0, 0, 0.85);
+    color: #ffffff;
 }
 
 body.light-theme .playlist-item {
