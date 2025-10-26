@@ -227,7 +227,6 @@ class MusicPlayer {
                 </div>
                 <div class="song-actions">
                     <button class="action-btn" onclick="musicPlayer.playSong(${index})" title="Play">▶️</button>
-                    <button class="action-btn" onclick="musicPlayer.removeSong(${index})" title="Remove">🗑️</button>
                 </div>
             `;
             
