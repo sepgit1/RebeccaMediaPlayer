@@ -352,6 +352,22 @@ class MusicPlayer {
 
     updatePlayButton() {
         this.playPauseBtn.textContent = this.isPlaying ? '⏸️' : '▶️';
+        
+        // Update visualizer animation speed
+        const container = document.querySelector('.container');
+        if (this.isPlaying) {
+            const song = this.songs[this.currentSongIndex];
+            const isVideo = song && (song.isVideo || false);
+            if (isVideo) {
+                container.classList.add('video-playing');
+                container.classList.remove('audio-playing');
+            } else {
+                container.classList.add('audio-playing');
+                container.classList.remove('video-playing');
+            }
+        } else {
+            container.classList.remove('audio-playing', 'video-playing');
+        }
     }
 
     prevSong() {
