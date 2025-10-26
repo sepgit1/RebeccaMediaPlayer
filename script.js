@@ -648,42 +648,79 @@ class MusicPlayer {
         const installPrompt = document.getElementById('installPrompt');
         const installBtn = document.getElementById('installBtn');
         const dismissBtn = document.getElementById('dismissBtn');
+        const iosGuide = document.getElementById('iosInstallGuide');
+        const closeIosGuide = document.getElementById('closeIosGuide');
 
-        // Listen for the beforeinstallprompt event
+        // Detect if iOS/Safari
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+
+        // Listen for the beforeinstallprompt event (Chrome, Edge, Firefox Android)
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
+            console.log('Install prompt available - showing banner');
             installPrompt.style.display = 'block';
         });
 
         // Handle install button click
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    this.showNotification('Rebecca Media Player installed successfully!');
+        if (installBtn) {
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        this.showNotification('✨ Rebecca Media Player installed successfully!');
+                    }
+                    deferredPrompt = null;
+                    installPrompt.style.display = 'none';
                 }
-                deferredPrompt = null;
-                installPrompt.style.display = 'none';
-            }
-        });
+            });
+        }
 
         // Handle dismiss button click
-        dismissBtn.addEventListener('click', () => {
-            installPrompt.style.display = 'none';
-        });
+        if (dismissBtn) {
+            dismissBtn.addEventListener('click', () => {
+                installPrompt.style.display = 'none';
+            });
+        }
+
+        // Show iOS install guide if on Safari/iOS
+        if (isIOS && isSafari && iosGuide) {
+            // Show after a short delay
+            setTimeout(() => {
+                iosGuide.style.display = 'block';
+                console.log('Showing iOS install guide');
+            }, 1000);
+        }
+
+        // Handle iOS guide close
+        if (closeIosGuide) {
+            closeIosGuide.addEventListener('click', () => {
+                if (iosGuide) {
+                    iosGuide.style.display = 'none';
+                }
+            });
+        }
 
         // Register service worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
                 .then(registration => {
-                    console.log('Service Worker registered:', registration);
+                    console.log('✓ Service Worker registered successfully');
                 })
                 .catch(error => {
-                    console.log('Service Worker registration failed:', error);
+                    console.log('Service Worker registration note:', error);
                 });
         }
+
+        // Log PWA support info
+        console.log('PWA Support:', {
+            isIOS,
+            isSafari,
+            hasBeforeInstallPrompt: 'onbeforeinstallprompt' in window,
+            isSecure: window.location.protocol === 'https:'
+        });
     }
 
     checkForUpdates() {
