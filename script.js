@@ -89,7 +89,24 @@ class MusicPlayer {
             expandVideoBtn.addEventListener('click', () => this.expandVideo());
         }
         if (minimizeVideoBtn) {
-            minimizeVideoBtn.addEventListener('click', () => this.minimizeVideo());
+            minimizeVideoBtn.addEventListener('click', () => {
+                // Check if we're in fullscreen overlay
+                const overlay = document.getElementById('videoFullscreenOverlay');
+                if (overlay) {
+                    this.minimizeVideo(); // Exit fullscreen mode
+                } else {
+                    // Close the video container but keep playing
+                    const video = document.getElementById('videoPlayer');
+                    if (video) {
+                        video.pause();
+                        this.videoContainer.style.display = 'none';
+                        // Continue playing on audio player (in case user wants audio only)
+                        if (this.isPlaying && !this.audio.src) {
+                            // If no audio was set, user was watching video, keep it paused
+                        }
+                    }
+                }
+            });
         }
         
         // Closed Captions and Comments
@@ -359,6 +376,14 @@ class MusicPlayer {
                     console.error('Error playing video:', error);
                     this.showNotification('Error playing this video. It might be corrupted.');
                 });
+                
+                // Add event listeners to prevent fullscreen takeover
+                this.video.onenterfullscreen = (e) => e.preventDefault();
+                this.video.onwheel = (e) => {
+                    if (document.fullscreenElement === this.video) {
+                        e.preventDefault();
+                    }
+                };
             } else {
                 this.videoContainer.style.display = 'none';
                 this.mediaIcon.textContent = '🎵';
@@ -424,6 +449,13 @@ class MusicPlayer {
         
         if (overlay) {
             overlay.remove();
+        }
+        
+        // Make sure to keep audio playing (continue playback of current song)
+        if (this.isPlaying) {
+            if (video.paused && video.src) {
+                video.play().catch(err => console.log('Playback note:', err));
+            }
         }
     }
 
