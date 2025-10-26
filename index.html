@@ -57,18 +57,12 @@
             </div>
         </header>
 
-        <!-- Animated Visualizer -->
-        <div class="visualizer-container">
-            <div class="visualizer" id="visualizer">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </div>
+        <!-- Scrollable Songs List -->
+        <div class="songs-list-container">
+            <h3 class="songs-list-title">📋 Playlist</h3>
+            <ul id="playlistContainer" class="songs-list">
+                <!-- Songs will be loaded here by JavaScript -->
+            </ul>
         </div>
 
         <!-- Video Player (YouTube-style embedded box) -->
@@ -134,20 +128,6 @@
             </label>
             <p class="drop-hint">💡 Or drag & drop files here</p>
             <button id="clearAllBtn" class="clear-btn">🗑️ Clear All Songs</button>
-        </div>
-
-        <!-- Playlist Section -->
-        <div class="playlist-section">
-            <h3>📋 My Playlist</h3>
-            <div class="playlist-controls">
-                <input type="text" id="searchInput" placeholder="🔍 Search songs..." class="search-input">
-                <select id="sortSelect" class="sort-select">
-                    <option value="name">Sort by Name</option>
-                    <option value="artist">Sort by Artist</option>
-                    <option value="date">Sort by Date Added</option>
-                </select>
-            </div>
-            <ul id="playlist" class="playlist"></ul>
         </div>
 
         <!-- Empty State -->
