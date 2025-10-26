@@ -1428,6 +1428,35 @@ body::after {
     box-shadow: 0 0 15px rgba(255, 20, 147, 0.4);
 }
 
+.install-app-btn {
+    background: linear-gradient(135deg, rgba(255, 20, 147, 0.3), rgba(255, 105, 180, 0.3));
+    border: 2px solid rgba(255, 20, 147, 0.6);
+    color: #ff1493;
+    font-size: 0.9rem;
+    padding: 8px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-weight: 600;
+    margin-right: 8px;
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.2);
+}
+
+.install-app-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 20, 147, 0.5), rgba(255, 105, 180, 0.5));
+    border-color: rgba(255, 20, 147, 0.9);
+    box-shadow: 0 8px 20px rgba(255, 20, 147, 0.4);
+    transform: translateY(-2px);
+}
+
+.install-app-btn:active {
+    transform: translateY(0);
+}
+
 .settings-modal {
     position: fixed;
     top: 0;
