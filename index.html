@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rebecca Media Player</title>
+    
+    <script>
+        // Check if user is authenticated
+        if (sessionStorage.getItem('musicPlayerAuthenticated') !== 'true') {
+            window.location.href = 'login.html';
+        }
+    </script>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Rebecca's elegant and futuristic media player with up to 500 songs and videos">
+    <meta name="theme-color" content="#ff1493">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Rebecca Media Player">
+    <!-- Cache bust: 2025-10-26-v5 -->
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" sizes="192x192" href="icons/icon-192x192.svg">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.svg">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css?v=2025-10-26-v5">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>💖Rebecca Media Player💖</h1>
+            <div class="song-counter">
+                <span id="songCount">0</span> / 500 items
+            </div>
+        </header>
+
+        <!-- Animated Visualizer -->
+        <div class="visualizer-container">
+            <div class="visualizer" id="visualizer">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </div>
+
+        <!-- Video Player (Hidden by default) -->
+        <div id="videoContainer" class="video-container" style="display: none;">
+            <video id="videoPlayer" controls>
+                Your browser does not support the video tag.
+            </video>
+        </div>
+
+        <!-- Music Controls -->
+        <div class="player-section">
+            <div class="current-song">
+                <div class="song-art">
+                    <div class="music-note" id="mediaIcon">🎵</div>
+                </div>
+                <div class="song-info">
+                    <h2 id="currentSongTitle">No song selected</h2>
+                    <p id="currentSongArtist">Select a song to start playing</p>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="prevBtn" class="control-btn">⏮️</button>
+                <button id="playPauseBtn" class="control-btn play-pause">▶️</button>
+                <button id="nextBtn" class="control-btn">⏭️</button>
+                <button id="shuffleBtn" class="control-btn">🔀</button>
+                <button id="repeatBtn" class="control-btn">🔁</button>
+                <button id="updateBtn" class="control-btn" title="Update App">🔄</button>
+            </div>
+
+
+        </div>
+
+        <!-- File Upload Section -->
+        <div class="upload-section" id="dropZone">
+            <label for="fileInput" class="upload-btn">
+                📁 Add Songs or Videos
+                <input type="file" id="fileInput" accept="audio/*,video/*" multiple style="display: none;">
+            </label>
+            <p class="drop-hint">💡 Or drag & drop files here</p>
+            <button id="clearAllBtn" class="clear-btn">🗑️ Clear All Songs</button>
+        </div>
+
+        <!-- Playlist Section -->
+        <div class="playlist-section">
+            <h3>📋 My Playlist</h3>
+            <div class="playlist-controls">
+                <input type="text" id="searchInput" placeholder="🔍 Search songs..." class="search-input">
+                <select id="sortSelect" class="sort-select">
+                    <option value="name">Sort by Name</option>
+                    <option value="artist">Sort by Artist</option>
+                    <option value="date">Sort by Date Added</option>
+                </select>
+            </div>
+            <ul id="playlist" class="playlist"></ul>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state">
+            <div class="empty-icon">🎶</div>
+            <h3>Your playlist is empty!</h3>
+            <p>Add some songs to get started</p>
+        </div>
+    </div>
+
+    <!-- Audio Element -->
+    <audio id="audioPlayer" preload="metadata"></audio>
+
+    <!-- Install PWA Prompt -->
+    <div id="installPrompt" class="install-prompt" style="display: none;">
+        <div class="install-content">
+            <h3>� Install Rebecca Media Player</h3>
+            <p>Add this elegant app to your home screen for quick access!</p>
+            <div class="install-buttons">
+                <button id="installBtn" class="install-btn-yes">Install</button>
+                <button id="dismissBtn" class="install-btn-no">Not now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js?v=2025-10-26-v5"></script>
+</body>
+</html>
