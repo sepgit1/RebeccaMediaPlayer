@@ -1906,13 +1906,13 @@ class MusicPlayer {
             reset() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = 5 + Math.random() * 120;
+                this.size = 2 + Math.random() * 60;
                 this.color = colors[Math.floor(Math.random() * colors.length)];
                 this.rotation = Math.random() * Math.PI * 2;
-                this.vx = (Math.random() - 0.5) * 2.5;
-                this.vy = (Math.random() - 0.5) * 2.5;
-                this.lineLength = 30 + Math.random() * 200;
-                this.opacity = 0.2 + Math.random() * 0.6;
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = (Math.random() - 0.5) * 1.5;
+                this.lineLength = 20 + Math.random() * 100;
+                this.opacity = 0.05 + Math.random() * 0.15;
                 this.rotationSpeed = (Math.random() - 0.5) * 0.1;
                 this.lineCount = 1 + Math.floor(Math.random() * 5);
             }
@@ -1952,7 +1952,7 @@ class MusicPlayer {
         
         const shapes = [];
         this.shapes = shapes;  // Store shapes reference for color updates
-    const SHAPE_COUNT = 10;
+        const SHAPE_COUNT = 6;
         for (let i = 0; i < SHAPE_COUNT; i++) {
             shapes.push(new Shape());
         }
@@ -1960,10 +1960,8 @@ class MusicPlayer {
         // Animation loop
         const animate = () => {
             // Semi-transparent clear for trail effect
-            ctx.fillStyle = 'rgba(45, 26, 45, 0.1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            shapes.forEach(shape => {
+            ctx.fillStyle = 'rgba(45, 26, 45, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);            shapes.forEach(shape => {
                 shape.update();
             });
             
