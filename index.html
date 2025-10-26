@@ -214,26 +214,30 @@
                 </div>
             </div>
 
-            <!-- Google Drive Sync Section -->
-            <div class="settings-section">
-                <label>☁️ Google Drive Sync</label>
-                <div class="sync-info">
-                    <p>Sync your playlists and comments across all your devices using Google Drive.</p>
-                    <p style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.7);">Email: sepkjubit@gmail.com</p>
-                </div>
-                <div class="admin-buttons">
-                    <button id="syncAuthBtn" class="admin-btn">🔐 Connect to Google Drive</button>
-                    <button id="syncUploadBtn" class="admin-btn" disabled>📤 Sync Up to Cloud</button>
-                    <button id="syncDownloadBtn" class="admin-btn" disabled>📥 Load from Cloud</button>
-                    <button id="syncLogoutBtn" class="admin-btn" disabled>🚪 Disconnect</button>
-                </div>
-                <div id="syncStatus" class="sync-status" style="display: none; margin-top: 10px; padding: 10px; border-radius: 5px; background: rgba(0, 255, 0, 0.1); color: #00ff00; font-size: 0.9rem;"></div>
-            </div>
-
             <!-- Admin Panel (Hidden by default) -->
             <div id="adminPanel" class="admin-panel" style="display: none;">
                 <div class="admin-divider"></div>
                 <div class="admin-header">
+                    <h3>👑 Admin Controls</h3>
+                </div>
+                
+                <!-- Google Drive Sync Section (Admin Only) -->
+                <div class="settings-section">
+                    <label>☁️ Google Drive Backup</label>
+                    <div class="sync-info">
+                        <p>Back up Rebecca's playlists and comments to your Google Drive.</p>
+                        <p style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.7);">Email: sepkjubit@gmail.com</p>
+                    </div>
+                    <div class="admin-buttons">
+                        <button id="syncAuthBtn" class="admin-btn">🔐 Connect to Google Drive</button>
+                        <button id="syncUploadBtn" class="admin-btn" disabled>📤 Backup to Cloud</button>
+                        <button id="syncDownloadBtn" class="admin-btn" disabled>📥 Restore from Cloud</button>
+                        <button id="syncLogoutBtn" class="admin-btn" disabled>🚪 Disconnect</button>
+                    </div>
+                    <div id="syncStatus" class="sync-status" style="display: none; margin-top: 10px; padding: 10px; border-radius: 5px; background: rgba(0, 255, 0, 0.1); color: #00ff00; font-size: 0.9rem;"></div>
+                </div>
+                
+                <div class="admin-divider"></div>
                     <h3>👑 Admin Controls</h3>
                 </div>
                 
