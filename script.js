@@ -12,6 +12,7 @@ class MusicPlayer {
         this.loadPlaylist();
         this.updateSongCounter();
         this.checkEmptyState();
+        this.loadSettings();
         
         // PWA install prompt
         this.initializePWA();
@@ -597,6 +598,130 @@ class MusicPlayer {
         setTimeout(() => {
             location.reload(true);
         }, 500);
+    }
+
+    // Settings Management
+    loadSettings() {
+        const savedTheme = localStorage.getItem('mediaPlayerTheme') || 'dark';
+        const savedColor = localStorage.getItem('mediaPlayerColor') || 'pink';
+        const savedAnimations = localStorage.getItem('mediaPlayerAnimations') !== 'false';
+
+        this.applyTheme(savedTheme);
+        this.applyColorScheme(savedColor);
+        this.setupSettingsModal();
+        
+        // Set animation toggle
+        const animationsToggle = document.getElementById('animationsToggle');
+        if (animationsToggle) {
+            animationsToggle.checked = savedAnimations;
+            animationsToggle.addEventListener('change', (e) => {
+                localStorage.setItem('mediaPlayerAnimations', e.target.checked);
+                document.body.style.animation = e.target.checked ? '' : 'none';
+                this.showNotification(e.target.checked ? '✨ Animations enabled' : '⚡ Animations disabled');
+            });
+        }
+    }
+
+    setupSettingsModal() {
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+
+        if (settingsBtn) {
+            settingsBtn.addEventListener('click', () => {
+                settingsModal.style.display = 'flex';
+            });
+        }
+
+        if (closeSettingsBtn) {
+            closeSettingsBtn.addEventListener('click', () => {
+                settingsModal.style.display = 'none';
+            });
+        }
+
+        // Close modal when clicking outside
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+        });
+
+        // Theme buttons
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const theme = e.target.getAttribute('data-theme');
+                
+                // Handle auto theme (system preference)
+                if (theme === 'auto') {
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    this.applyTheme(prefersDark ? 'dark' : 'light');
+                } else {
+                    this.applyTheme(theme);
+                }
+            });
+        });
+
+        // Color buttons
+        document.querySelectorAll('.color-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const color = e.target.getAttribute('data-color');
+                this.applyColorScheme(color);
+            });
+        });
+
+        // Update active states
+        this.updateSettingsUI();
+    }
+
+    applyTheme(theme) {
+        document.body.classList.remove('light-theme', 'dark-theme');
+        
+        if (theme === 'auto') {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.body.classList.add(prefersDark ? 'dark-theme' : 'light-theme');
+            localStorage.setItem('mediaPlayerTheme', 'auto');
+        } else {
+            document.body.classList.add(`${theme}-theme`);
+            localStorage.setItem('mediaPlayerTheme', theme);
+        }
+
+        this.updateSettingsUI();
+        this.showNotification(`🌓 ${theme.charAt(0).toUpperCase() + theme.slice(1)} mode activated`);
+    }
+
+    applyColorScheme(color) {
+        // Remove all color theme classes
+        ['pink', 'purple', 'blue', 'green', 'orange', 'red'].forEach(c => {
+            document.body.classList.remove(`${c}-theme`);
+        });
+
+        // Add the selected color theme
+        document.body.classList.add(`${color}-theme`);
+        localStorage.setItem('mediaPlayerColor', color);
+
+        this.updateSettingsUI();
+        this.showNotification(`🎨 Color scheme changed`);
+    }
+
+    updateSettingsUI() {
+        const currentTheme = localStorage.getItem('mediaPlayerTheme') || 'dark';
+        const currentColor = localStorage.getItem('mediaPlayerColor') || 'pink';
+
+        // Update theme buttons
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-theme') === currentTheme) {
+                btn.classList.add('active');
+            }
+        });
+
+        // Update color buttons
+        document.querySelectorAll('.color-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-color') === currentColor) {
+                btn.classList.add('active');
+            }
+        });
     }
 }
 

@@ -35,8 +35,11 @@
     <div class="container">
         <header class="header">
             <h1>💖Rebecca Media Player💖</h1>
-            <div class="song-counter">
-                <span id="songCount">0</span> / 500 items
+            <div class="header-right">
+                <div class="song-counter">
+                    <span id="songCount">0</span> / 500 items
+                </div>
+                <button id="settingsBtn" class="settings-btn" title="Settings">⚙️</button>
             </div>
         </header>
 
@@ -128,6 +131,45 @@
             <div class="install-buttons">
                 <button id="installBtn" class="install-btn-yes">Install</button>
                 <button id="dismissBtn" class="install-btn-no">Not now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="settings-modal" style="display: none;">
+        <div class="settings-modal-content">
+            <div class="settings-header">
+                <h2>⚙️ Settings</h2>
+                <button id="closeSettingsBtn" class="close-btn">✕</button>
+            </div>
+            
+            <div class="settings-section">
+                <label>🌓 Theme</label>
+                <div class="theme-options">
+                    <button class="theme-btn" data-theme="light" title="Light Mode">☀️</button>
+                    <button class="theme-btn" data-theme="dark" title="Dark Mode">🌙</button>
+                    <button class="theme-btn" data-theme="auto" title="Auto Mode">🔄</button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <label>🎨 Color Scheme</label>
+                <div class="color-options">
+                    <button class="color-btn" data-color="pink" title="Pink" style="background: linear-gradient(135deg, #ff1493, #ff69b4);"></button>
+                    <button class="color-btn" data-color="purple" title="Purple" style="background: linear-gradient(135deg, #8b00ff, #d946ef);"></button>
+                    <button class="color-btn" data-color="blue" title="Blue" style="background: linear-gradient(135deg, #0066ff, #00d4ff);"></button>
+                    <button class="color-btn" data-color="green" title="Green" style="background: linear-gradient(135deg, #00b894, #55efc4);"></button>
+                    <button class="color-btn" data-color="orange" title="Orange" style="background: linear-gradient(135deg, #ff7f50, #ffa500);"></button>
+                    <button class="color-btn" data-color="red" title="Red" style="background: linear-gradient(135deg, #ff0000, #ff4444);"></button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <label>🎵 Other Options</label>
+                <div class="toggle-option">
+                    <span>Enable Animations</span>
+                    <input type="checkbox" id="animationsToggle" class="toggle-checkbox">
+                </div>
             </div>
         </div>
     </div>

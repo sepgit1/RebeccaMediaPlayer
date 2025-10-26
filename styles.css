@@ -149,34 +149,37 @@ body {
 .visualizer-container {
     padding: 30px 20px;
     background: linear-gradient(180deg,
-        rgba(255, 20, 147, 0.1) 0%,
-        rgba(138, 43, 226, 0.05) 100%);
+        rgba(255, 20, 147, 0.15) 0%,
+        rgba(138, 43, 226, 0.1) 100%);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100px;
-    border-bottom: 1px solid rgba(255, 20, 147, 0.2);
+    min-height: 120px;
+    border-bottom: 2px solid rgba(255, 20, 147, 0.3);
 }
 
 .visualizer {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
     justify-content: center;
-    height: 80px;
+    height: 100px;
 }
 
 .visualizer .bar {
-    width: 6px;
-    height: 20px;
+    width: 8px;
+    height: 30px;
     background: linear-gradient(180deg,
-        rgba(255, 20, 147, 0.8) 0%,
-        rgba(255, 105, 180, 0.6) 100%);
-    border-radius: 3px;
+        #ff1493 0%,
+        #ff69b4 50%,
+        #da70d6 100%);
+    border-radius: 4px;
     animation: pulse 0.6s ease-in-out infinite;
-    box-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+    box-shadow: 
+        0 0 15px rgba(255, 20, 147, 0.8),
+        0 0 30px rgba(255, 105, 180, 0.4);
 }
 
 .visualizer .bar:nth-child(1) { animation-delay: 0s; }
@@ -190,11 +193,11 @@ body {
 
 @keyframes pulse {
     0%, 100% {
-        height: 20px;
-        opacity: 0.6;
+        height: 30px;
+        opacity: 0.5;
     }
     50% {
-        height: 70px;
+        height: 85px;
         opacity: 1;
     }
 }
@@ -202,7 +205,10 @@ body {
 /* When playing - faster animation */
 .audio-playing .visualizer .bar,
 .video-playing .visualizer .bar {
-    animation-duration: 0.4s;
+    animation-duration: 0.35s;
+    box-shadow: 
+        0 0 20px rgba(255, 20, 147, 1),
+        0 0 40px rgba(255, 105, 180, 0.6);
 }
 
 /* Video Player */
@@ -448,6 +454,29 @@ body {
         0 10px 30px rgba(255, 20, 147, 0.4),
         0 0 0 1px rgba(255, 255, 255, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Update Button */
+#updateBtn {
+    background: linear-gradient(135deg,
+        rgba(100, 200, 255, 0.3),
+        rgba(150, 150, 255, 0.2),
+        rgba(100, 200, 255, 0.3));
+    font-size: 1.5rem;
+    animation: spin 3s linear infinite;
+}
+
+#updateBtn:hover {
+    background: linear-gradient(135deg,
+        rgba(100, 200, 255, 0.5),
+        rgba(150, 150, 255, 0.4),
+        rgba(100, 200, 255, 0.5));
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* Volume */
@@ -1004,3 +1033,271 @@ body {
 .playlist-item:nth-child(3) { animation-delay: 0.3s; }
 .playlist-item:nth-child(4) { animation-delay: 0.4s; }
 .playlist-item:nth-child(5) { animation-delay: 0.5s; }
+
+/* Settings Styles */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.settings-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    font-size: 1.5rem;
+    padding: 10px 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 20, 147, 0.4);
+}
+
+.settings-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.settings-modal-content {
+    background: rgba(45, 26, 45, 0.95);
+    backdrop-filter: blur(25px);
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-header h2 {
+    font-size: 1.5rem;
+    color: #ffffff;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    transform: rotate(90deg);
+    color: #ff1493;
+}
+
+.settings-section {
+    margin-bottom: 25px;
+}
+
+.settings-section label {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.theme-options {
+    display: flex;
+    gap: 10px;
+}
+
+.theme-btn {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.theme-btn:hover {
+    border-color: rgba(255, 20, 147, 0.5);
+    background: rgba(255, 20, 147, 0.1);
+}
+
+.theme-btn.active {
+    border-color: #ff1493;
+    background: rgba(255, 20, 147, 0.2);
+    box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+}
+
+.color-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.color-btn {
+    aspect-ratio: 1;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.color-btn:hover {
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.color-btn.active {
+    border-color: #ffffff;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.toggle-checkbox {
+    width: 40px;
+    height: 24px;
+    cursor: pointer;
+    accent-color: #ff1493;
+}
+
+/* Theme Variables */
+:root {
+    --primary-color: #ff1493;
+    --secondary-color: #ff69b4;
+    --dark-bg: #2d1a2d;
+    --light-bg: #ffffff;
+    --dark-text: #000000;
+    --light-text: #ffffff;
+}
+
+/* Light Theme */
+body.light-theme {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 50%, #f0f0f0 100%);
+    color: #000000;
+}
+
+body.light-theme .container {
+    background: rgba(255, 255, 255, 0.9);
+    color: #000000;
+}
+
+body.light-theme .header {
+    color: #000000;
+}
+
+body.light-theme .song-counter {
+    color: #000000;
+}
+
+body.light-theme .control-btn,
+body.light-theme .upload-btn,
+body.light-theme .clear-btn {
+    background: rgba(0, 0, 0, 0.05);
+    color: #000000;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .control-btn:hover {
+    background: rgba(255, 20, 147, 0.1);
+}
+
+body.light-theme .playlist-item {
+    background: rgba(0, 0, 0, 0.03);
+    color: #000000;
+}
+
+body.light-theme .playlist-item:hover {
+    background: rgba(255, 20, 147, 0.1);
+}
+
+/* Color Scheme Variables */
+body.pink-theme {
+    --primary-color: #ff1493;
+    --secondary-color: #ff69b4;
+}
+
+body.purple-theme {
+    --primary-color: #8b00ff;
+    --secondary-color: #d946ef;
+}
+
+body.blue-theme {
+    --primary-color: #0066ff;
+    --secondary-color: #00d4ff;
+}
+
+body.green-theme {
+    --primary-color: #00b894;
+    --secondary-color: #55efc4;
+}
+
+body.orange-theme {
+    --primary-color: #ff7f50;
+    --secondary-color: #ffa500;
+}
+
+body.red-theme {
+    --primary-color: #ff0000;
+    --secondary-color: #ff4444;
+}
+
+/* Apply theme colors to elements */
+.header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.control-btn.play-pause.playing {
+    color: var(--primary-color);
+}
+
+.visualizer .bar {
+    background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+.upload-btn {
+    background: rgba(var(--primary-color-r, 255), var(--primary-color-g, 20), var(--primary-color-b, 147), 0.1);
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+}
