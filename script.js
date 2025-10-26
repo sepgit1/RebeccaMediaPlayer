@@ -1475,7 +1475,7 @@ class MusicPlayer {
 
     initializeDynamicShapes() {
         const canvas = document.getElementById('dynamicShapesCanvas');
-        if (!canvas) return;
+        if (!canvas || !window.gsap) return;
         
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -1483,88 +1483,119 @@ class MusicPlayer {
         
         // Color palette matching maroon/purple theme
         const colors = [
-            'rgba(255, 20, 147, 0.3)',    // Deep pink
-            'rgba(138, 43, 226, 0.3)',    // Maroon-purple
-            'rgba(255, 105, 180, 0.3)',   // Hot pink
-            'rgba(128, 0, 0, 0.3)',       // Maroon
-            'rgba(199, 21, 133, 0.3)'     // Medium violet red
+            { r: 255, g: 20, b: 147 },    // Deep pink
+            { r: 138, g: 43, b: 226 },    // Maroon-purple
+            { r: 255, g: 105, b: 180 },   // Hot pink
+            { r: 128, g: 0, b: 0 },       // Maroon
+            { r: 199, g: 21, b: 133 }     // Medium violet red
         ];
         
-        // Create particles
+        // Create animated particles with GSAP
         const particles = [];
-        const particleCount = 15;
+        const particleCount = 8;
         
         for (let i = 0; i < particleCount; i++) {
-            particles.push({
+            const particle = {
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5,
-                radius: Math.random() * 80 + 30,
+                vx: (Math.random() - 0.5) * 2,
+                vy: (Math.random() - 0.5) * 2,
+                radius: Math.random() * 150 + 50,
                 color: colors[Math.floor(Math.random() * colors.length)],
-                shapeType: Math.floor(Math.random() * 3) // 0: circle, 1: square, 2: triangle
+                shapeType: Math.floor(Math.random() * 4), // 0: circle, 1: square, 2: triangle, 3: hexagon
+                rotation: 0,
+                opacity: 0.3 + Math.random() * 0.3
+            };
+            
+            particles.push(particle);
+            
+            // Animate with GSAP - smooth infinite movement
+            gsap.to(particle, {
+                x: () => Math.random() * canvas.width,
+                y: () => Math.random() * canvas.height,
+                duration: 8 + Math.random() * 6,
+                ease: "sine.inOut",
+                repeat: -1,
+                yoyo: true
+            });
+            
+            // Scale pulse animation
+            gsap.to(particle, {
+                radius: () => particle.radius * (0.6 + Math.random() * 0.8),
+                duration: 3 + Math.random() * 2,
+                ease: "sine.inOut",
+                repeat: -1,
+                yoyo: true
+            });
+            
+            // Rotation animation
+            gsap.to(particle, {
+                rotation: Math.PI * 2,
+                duration: 10 + Math.random() * 5,
+                ease: "none",
+                repeat: -1
             });
         }
         
-        const animate = () => {
+        // Draw function
+        const draw = () => {
             // Clear with semi-transparent background for trail effect
-            ctx.fillStyle = 'rgba(45, 26, 45, 0.05)';
+            ctx.fillStyle = 'rgba(45, 26, 45, 0.08)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Update and draw particles
-            particles.forEach((particle, index) => {
-                // Update position
-                particle.x += particle.vx;
-                particle.y += particle.vy;
-                
-                // Bounce off walls
-                if (particle.x - particle.radius < 0 || particle.x + particle.radius > canvas.width) {
-                    particle.vx *= -1;
-                    particle.x = Math.max(particle.radius, Math.min(canvas.width - particle.radius, particle.x));
-                }
-                if (particle.y - particle.radius < 0 || particle.y + particle.radius > canvas.height) {
-                    particle.vy *= -1;
-                    particle.y = Math.max(particle.radius, Math.min(canvas.height - particle.radius, particle.y));
-                }
-                
-                // Slowly rotate color
-                const hueShift = (index + Date.now() / 100) % colors.length;
-                
-                // Draw shape
-                ctx.fillStyle = particle.color;
-                ctx.globalAlpha = 0.4 + Math.sin(Date.now() / 2000 + index) * 0.2;
-                
+            // Draw each particle
+            particles.forEach((particle) => {
                 ctx.save();
                 ctx.translate(particle.x, particle.y);
+                ctx.rotate(particle.rotation);
+                
+                const color = particle.color;
+                ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${particle.opacity})`;
+                ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${particle.opacity * 0.7})`;
+                ctx.lineWidth = 2;
                 
                 if (particle.shapeType === 0) {
                     // Circle
                     ctx.beginPath();
                     ctx.arc(0, 0, particle.radius, 0, Math.PI * 2);
                     ctx.fill();
+                    ctx.stroke();
                 } else if (particle.shapeType === 1) {
-                    // Square with rotation
-                    ctx.rotate((Date.now() / 5000 + index) % (Math.PI * 2));
-                    ctx.fillRect(-particle.radius / 2, -particle.radius / 2, particle.radius, particle.radius);
-                } else {
-                    // Triangle with rotation
-                    ctx.rotate((Date.now() / 5000 + index) % (Math.PI * 2));
+                    // Square
+                    const size = particle.radius;
+                    ctx.fillRect(-size / 2, -size / 2, size, size);
+                    ctx.strokeRect(-size / 2, -size / 2, size, size);
+                } else if (particle.shapeType === 2) {
+                    // Triangle
                     ctx.beginPath();
                     ctx.moveTo(0, -particle.radius);
                     ctx.lineTo(particle.radius, particle.radius);
                     ctx.lineTo(-particle.radius, particle.radius);
                     ctx.closePath();
                     ctx.fill();
+                    ctx.stroke();
+                } else if (particle.shapeType === 3) {
+                    // Hexagon
+                    ctx.beginPath();
+                    for (let i = 0; i < 6; i++) {
+                        const angle = (i * Math.PI) / 3;
+                        const x = Math.cos(angle) * particle.radius;
+                        const y = Math.sin(angle) * particle.radius;
+                        if (i === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
                 }
                 
                 ctx.restore();
             });
             
-            ctx.globalAlpha = 1;
-            requestAnimationFrame(animate);
+            requestAnimationFrame(draw);
         };
         
-        animate();
+        draw();
         
         // Handle window resize
         window.addEventListener('resize', () => {
