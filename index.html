@@ -532,6 +532,17 @@
         const googleDriveSync = new GoogleDriveSync();
     </script>
 
+    <!-- Register Service Worker for PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(registration => {
+                console.log('Service Worker registered successfully:', registration);
+            }).catch(error => {
+                console.log('Service Worker registration failed:', error);
+            });
+        }
+    </script>
+
     <!-- Scripts -->
     <script src="script.js?v=2025-10-26-v5"></script>
 </body>
