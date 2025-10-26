@@ -1,4 +1,4 @@
-const CACHE_NAME = 'music-player-v3';
+const CACHE_NAME = 'music-player-v5';
 const urlsToCache = [
   './',
   './index.html',
