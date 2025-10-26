@@ -546,6 +546,10 @@ class MusicPlayer {
                 this.mediaIcon.textContent = '🎵';
                 this.audio.src = song.url;
                 this.audio.load();
+                
+                // Initialize Web Audio API for audio effects
+                this.initializeAudioContext();
+                
                 this.audio.play().then(() => {
                     this.isPlaying = true;
                     this.updatePlayButton();
@@ -1243,20 +1247,21 @@ class MusicPlayer {
         return names[mode] || 'Normal';
     }
 
-    applyAudioModeEffects(mode) {
-        // Initialize Web Audio API if not already done
-        if (!this.audioContext) {
-            try {
-                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            } catch (e) {
-                console.log('Web Audio API not supported:', e.message);
-                return;
-            }
+    initializeAudioContext() {
+        // Only initialize once
+        if (this.audioContext && this.audioSource) {
+            return;
         }
 
-        // Create audio nodes if they don't exist
-        if (!this.audioSource && this.audio) {
-            try {
+        try {
+            // Create audio context
+            if (!this.audioContext) {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                console.log('Web Audio API context created');
+            }
+
+            // Create audio source from the audio element
+            if (!this.audioSource && this.audio) {
                 this.audioSource = this.audioContext.createMediaElementAudioSource(this.audio);
                 
                 // Create filter nodes
@@ -1277,7 +1282,7 @@ class MusicPlayer {
                 this.trebleFilter.type = 'highshelf';
                 this.trebleFilter.frequency.value = 3000;
 
-                // Connect nodes
+                // Connect nodes: source -> bass -> mid -> treble -> gain -> analyser -> destination
                 this.audioSource.connect(this.bassFilter);
                 this.bassFilter.connect(this.midFilter);
                 this.midFilter.connect(this.trebleFilter);
@@ -1286,16 +1291,29 @@ class MusicPlayer {
                 this.analyser.connect(this.audioContext.destination);
 
                 this.gainNode.gain.value = 1.0;
-            } catch (e) {
-                console.log('Error setting up audio nodes:', e.message);
-                return;
+                
+                console.log('Audio nodes connected and ready');
+                
+                // Apply current audio mode
+                this.applyAudioModeEffects(this.audioMode);
             }
+        } catch (e) {
+            console.log('Error initializing Web Audio API:', e.message);
+        }
+    }
+
+    applyAudioModeEffects(mode) {
+        // Make sure audio context and filters exist
+        if (!this.audioContext || !this.bassFilter || !this.midFilter || !this.trebleFilter) {
+            console.log('Audio nodes not initialized yet');
+            return;
         }
 
         // Reset all filters
         this.bassFilter.gain.value = 0;
         this.midFilter.gain.value = 0;
         this.trebleFilter.gain.value = 0;
+        this.gainNode.gain.value = 1.0;
 
         // Apply EQ for different modes
         switch(mode) {
@@ -1344,12 +1362,7 @@ class MusicPlayer {
                 break;
             default:
                 // Normal/flat response
-                this.gainNode.gain.value = 1.0;
                 console.log('Normal audio mode - flat response');
-        }
-
-        if (mode !== 'carradio') {
-            this.gainNode.gain.value = 1.0;
         }
     }
 
