@@ -98,8 +98,73 @@ class MusicPlayer {
             postCommentBtn.addEventListener('click', () => this.addComment());
         }
         
+        // Google Drive Sync buttons
+        const syncAuthBtn = document.getElementById('syncAuthBtn');
+        const syncUploadBtn = document.getElementById('syncUploadBtn');
+        const syncDownloadBtn = document.getElementById('syncDownloadBtn');
+        const syncLogoutBtn = document.getElementById('syncLogoutBtn');
+        
+        if (syncAuthBtn) {
+            syncAuthBtn.addEventListener('click', () => this.handleSyncAuth());
+        }
+        if (syncUploadBtn) {
+            syncUploadBtn.addEventListener('click', () => this.syncAllDataToCloud());
+        }
+        if (syncDownloadBtn) {
+            syncDownloadBtn.addEventListener('click', () => this.loadAllDataFromCloud());
+        }
+        if (syncLogoutBtn) {
+            syncLogoutBtn.addEventListener('click', () => this.handleSyncLogout());
+        }
+        
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+    }
+
+    async handleSyncAuth() {
+        const syncAuthBtn = document.getElementById('syncAuthBtn');
+        syncAuthBtn.disabled = true;
+        syncAuthBtn.textContent = '⏳ Connecting...';
+        
+        const success = await this.authenticateGoogleDrive();
+        
+        if (success) {
+            this.updateSyncUI();
+            syncAuthBtn.textContent = '✓ Connected!';
+            setTimeout(() => {
+                syncAuthBtn.textContent = '🔐 Connect to Google Drive';
+                syncAuthBtn.disabled = false;
+            }, 2000);
+        } else {
+            syncAuthBtn.textContent = '🔐 Connect to Google Drive';
+            syncAuthBtn.disabled = false;
+        }
+    }
+
+    handleSyncLogout() {
+        this.logoutGoogleDrive();
+        this.updateSyncUI();
+    }
+
+    updateSyncUI() {
+        const syncAuthBtn = document.getElementById('syncAuthBtn');
+        const syncUploadBtn = document.getElementById('syncUploadBtn');
+        const syncDownloadBtn = document.getElementById('syncDownloadBtn');
+        const syncLogoutBtn = document.getElementById('syncLogoutBtn');
+        
+        if (googleDriveSync.isAuthenticated) {
+            syncAuthBtn.disabled = true;
+            syncAuthBtn.textContent = '✓ Connected';
+            syncUploadBtn.disabled = false;
+            syncDownloadBtn.disabled = false;
+            syncLogoutBtn.disabled = false;
+        } else {
+            syncAuthBtn.disabled = false;
+            syncAuthBtn.textContent = '🔐 Connect to Google Drive';
+            syncUploadBtn.disabled = true;
+            syncDownloadBtn.disabled = true;
+            syncLogoutBtn.disabled = true;
+        }
     }
 
     setupDragAndDrop() {
@@ -991,10 +1056,133 @@ class MusicPlayer {
             userNameElement.textContent = `👤 ${userName}`;
         }
     }
+
+    // Google Drive Sync Methods
+    async initializeGoogleDriveSync() {
+        try {
+            if (typeof gapi === 'undefined') return false;
+            
+            await new Promise((resolve) => {
+                gapi.load('client', resolve);
+            });
+            
+            await googleDriveSync.initializeGoogleAPI();
+            return true;
+        } catch (error) {
+            console.error('Error initializing Google Drive:', error);
+            return false;
+        }
+    }
+
+    async authenticateGoogleDrive() {
+        try {
+            const result = await googleDriveSync.authenticateWithGoogle();
+            if (result) {
+                this.showNotification('✓ Connected to Google Drive!');
+            }
+            return result;
+        } catch (error) {
+            console.error('Error authenticating:', error);
+            this.showNotification('✗ Google Drive connection failed');
+            return false;
+        }
+    }
+
+    async syncPlaylistToCloud() {
+        try {
+            if (!googleDriveSync.isAuthenticated) {
+                await this.authenticateGoogleDrive();
+                if (!googleDriveSync.isAuthenticated) return false;
+            }
+            
+            await googleDriveSync.savePlaylistToGoogleDrive(this.songs);
+            this.showNotification('☁️ Playlist synced to Google Drive!');
+            return true;
+        } catch (error) {
+            console.error('Error syncing playlist:', error);
+            this.showNotification('✗ Sync failed');
+            return false;
+        }
+    }
+
+    async syncCommentsToCloud() {
+        try {
+            if (!googleDriveSync.isAuthenticated) {
+                await this.authenticateGoogleDrive();
+                if (!googleDriveSync.isAuthenticated) return false;
+            }
+            
+            await googleDriveSync.saveCommentsToGoogleDrive(this.comments);
+            this.showNotification('☁️ Comments synced to Google Drive!');
+            return true;
+        } catch (error) {
+            console.error('Error syncing comments:', error);
+            this.showNotification('✗ Sync failed');
+            return false;
+        }
+    }
+
+    async syncAllDataToCloud() {
+        try {
+            if (!googleDriveSync.isAuthenticated) {
+                await this.authenticateGoogleDrive();
+                if (!googleDriveSync.isAuthenticated) return false;
+            }
+            
+            await googleDriveSync.syncAllData(this.songs, this.comments);
+            this.showNotification('☁️ All data synced to Google Drive!');
+            localStorage.setItem('lastGoogleDriveSync', new Date().toISOString());
+            return true;
+        } catch (error) {
+            console.error('Error syncing all data:', error);
+            this.showNotification('✗ Sync failed');
+            return false;
+        }
+    }
+
+    async loadAllDataFromCloud() {
+        try {
+            if (!googleDriveSync.isAuthenticated) {
+                await this.authenticateGoogleDrive();
+                if (!googleDriveSync.isAuthenticated) return false;
+            }
+            
+            const data = await googleDriveSync.loadAllData();
+            
+            if (data.playlist) {
+                this.songs = data.playlist;
+                localStorage.setItem('musicPlayerSongs', JSON.stringify(this.songs));
+            }
+            
+            if (data.comments) {
+                this.comments = data.comments;
+                localStorage.setItem('musicPlayerComments', JSON.stringify(this.comments));
+            }
+            
+            this.loadPlaylist();
+            this.displayComments();
+            this.showNotification('☁️ Data loaded from Google Drive!');
+            return true;
+        } catch (error) {
+            console.error('Error loading from cloud:', error);
+            this.showNotification('✗ Load failed');
+            return false;
+        }
+    }
+
+    logoutGoogleDrive() {
+        googleDriveSync.logout();
+        this.showNotification('✓ Google Drive disconnected');
+    }
 }
 
 // Initialize the music player when the page loads
 let musicPlayer;
 document.addEventListener('DOMContentLoaded', () => {
     musicPlayer = new MusicPlayer();
+    
+    // Initialize Google Drive sync in background
+    musicPlayer.initializeGoogleDriveSync().then(() => {
+        console.log('Google Drive sync initialized');
+    });
 });
