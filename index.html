@@ -19,7 +19,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Rebecca Media Player">
-    <!-- Cache bust: 2025-10-26-v3 -->
+    <!-- Cache bust: 2025-10-26-v5 -->
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -29,7 +29,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192x192.svg">
     
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="styles.css?v=2025-10-26-v4">
+    <link rel="stylesheet" href="styles.css?v=2025-10-26-v5">
 </head>
 <body>
     <div class="container">
@@ -73,14 +73,6 @@
                 </div>
             </div>
 
-            <div class="progress-container">
-                <span id="currentTime">0:00</span>
-                <div class="progress-bar">
-                    <div id="progress" class="progress"></div>
-                </div>
-                <span id="duration">0:00</span>
-            </div>
-
             <div class="controls">
                 <button id="prevBtn" class="control-btn">⏮️</button>
                 <button id="playPauseBtn" class="control-btn play-pause">▶️</button>
@@ -90,10 +82,7 @@
                 <button id="updateBtn" class="control-btn" title="Update App">🔄</button>
             </div>
 
-            <div class="volume-container">
-                <span>🔊</span>
-                <input type="range" id="volumeSlider" min="0" max="100" value="50" class="volume-slider">
-            </div>
+
         </div>
 
         <!-- File Upload Section -->
@@ -144,6 +133,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="script.js?v=2025-10-26"></script>
+    <script src="script.js?v=2025-10-26-v5"></script>
 </body>
 </html>

@@ -30,13 +30,6 @@ class MusicPlayer {
         this.nextBtn = document.getElementById('nextBtn');
         this.shuffleBtn = document.getElementById('shuffleBtn');
         this.repeatBtn = document.getElementById('repeatBtn');
-        this.volumeSlider = document.getElementById('volumeSlider');
-        
-        // Progress elements
-        this.progressBar = document.querySelector('.progress-bar');
-        this.progress = document.getElementById('progress');
-        this.currentTime = document.getElementById('currentTime');
-        this.duration = document.getElementById('duration');
         
         // Song info elements
         this.currentSongTitle = document.getElementById('currentSongTitle');
@@ -54,8 +47,8 @@ class MusicPlayer {
 
     bindEvents() {
         // Audio events
-        this.audio.addEventListener('loadedmetadata', () => this.updateDuration());
-        this.audio.addEventListener('timeupdate', () => this.updateProgress());
+        this.audio.addEventListener('loadedmetadata', () => {});
+        this.audio.addEventListener('timeupdate', () => {});
         this.audio.addEventListener('ended', () => this.nextSong());
         this.audio.addEventListener('error', (e) => this.handleAudioError(e));
 
@@ -65,16 +58,12 @@ class MusicPlayer {
         this.nextBtn.addEventListener('click', () => this.nextSong());
         this.shuffleBtn.addEventListener('click', () => this.toggleShuffle());
         this.repeatBtn.addEventListener('click', () => this.toggleRepeat());
-        this.volumeSlider.addEventListener('input', () => this.updateVolume());
         
         // Update button
         const updateBtn = document.getElementById('updateBtn');
         if (updateBtn) {
             updateBtn.addEventListener('click', () => this.checkForUpdates());
         }
-        
-        // Progress bar click
-        this.progressBar.addEventListener('click', (e) => this.seekTo(e));
         
         // File input
         this.fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
@@ -406,31 +395,6 @@ class MusicPlayer {
         this.isRepeating = !this.isRepeating;
         this.repeatBtn.classList.toggle('active', this.isRepeating);
         this.showNotification(this.isRepeating ? 'Repeat enabled' : 'Repeat disabled');
-    }
-
-    updateVolume() {
-        this.audio.volume = this.volumeSlider.value / 100;
-    }
-
-    updateProgress() {
-        if (this.audio.duration) {
-            const progressPercent = (this.audio.currentTime / this.audio.duration) * 100;
-            this.progress.style.width = progressPercent + '%';
-            this.currentTime.textContent = this.formatTime(this.audio.currentTime);
-        }
-    }
-
-    updateDuration() {
-        this.duration.textContent = this.formatTime(this.audio.duration);
-    }
-
-    seekTo(event) {
-        if (this.audio.duration) {
-            const rect = this.progressBar.getBoundingClientRect();
-            const clickX = event.clientX - rect.left;
-            const seekTime = (clickX / rect.width) * this.audio.duration;
-            this.audio.currentTime = seekTime;
-        }
     }
 
     formatTime(seconds) {
