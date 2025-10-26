@@ -416,33 +416,35 @@ body::after {
 
 .video-box-controls {
     position: absolute;
-    bottom: 40px;
+    bottom: 10px;
     right: 10px;
     display: flex;
     gap: 8px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 8px;
-    border-radius: 6px;
-    backdrop-filter: blur(10px);
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
 }
 
 .video-expand-btn,
 .video-close-btn {
-    background: rgba(255, 20, 147, 0.6);
-    border: 1px solid rgba(255, 20, 147, 0.8);
+    background: rgba(255, 20, 147, 0.7);
+    border: 1px solid rgba(255, 20, 147, 0.9);
     color: #fff;
-    padding: 6px 12px;
-    border-radius: 4px;
+    padding: 8px 14px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
     transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .video-expand-btn:hover,
 .video-close-btn:hover {
-    background: rgba(255, 20, 147, 0.9);
-    transform: scale(1.05);
+    background: rgba(255, 20, 147, 1);
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.4);
 }
 
 .video-time-display {
