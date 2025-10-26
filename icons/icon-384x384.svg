@@ -1,0 +1,38 @@
+<svg width="384" height="384" viewBox="0 0 384 384" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="futuristicGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff1493;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#ff69b4;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#da70d6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ba55d3;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="384" height="384" rx="80" fill="url(#futuristicGrad)" />
+  <polygon points="192,72 264,112 264,208 192,248 120,208 120,112"
+           fill="rgba(255,255,255,0.1)"
+           stroke="rgba(255,255,255,0.3)"
+           stroke-width="4"
+           filter="url(#glow)" />
+  <path d="M192,136 Q210,114 228,136 Q246,158 228,180 Q210,202 192,180 Q174,202 156,180 Q138,158 156,136 Q174,114 192,136"
+        fill="none"
+        stroke="rgba(255,255,255,0.6)"
+        stroke-width="6"
+        filter="url(#glow)" />
+  <circle cx="192" cy="136" r="16" fill="rgba(255,255,255,0.8)" filter="url(#glow)" />
+  <circle cx="192" cy="180" r="12" fill="rgba(255,255,255,0.6)" filter="url(#glow)" />
+  <rect x="32" y="32" width="30" height="6" rx="3" fill="rgba(255,255,255,0.4)" />
+  <rect x="322" y="32" width="30" height="6" rx="3" fill="rgba(255,255,255,0.4)" />
+  <rect x="32" y="346" width="30" height="6" rx="3" fill="rgba(255,255,255,0.4)" />
+  <rect x="322" y="346" width="30" height="6" rx="3" fill="rgba(255,255,255,0.4)" />
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  </pattern>
+  <rect width="384" height="384" fill="url(#grid)" opacity="0.3" />
+</svg>
