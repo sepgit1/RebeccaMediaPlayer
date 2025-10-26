@@ -216,9 +216,11 @@
         // Clear any existing session when login page loads
         // This forces password entry each time the app is opened fresh
         sessionStorage.removeItem('musicPlayerAuthenticated');
+        sessionStorage.removeItem('isAdmin');
 
         // Password protection
         const CORRECT_PASSWORD = 'beccabear@13';
+        const ADMIN_PASSWORD = 'admin123';
 
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -227,10 +229,15 @@
             const errorMessage = document.getElementById('errorMessage');
             const enteredPassword = passwordInput.value;
 
-            if (enteredPassword === CORRECT_PASSWORD) {
-                // Store that they've logged in
+            if (enteredPassword === ADMIN_PASSWORD) {
+                // Admin login
                 sessionStorage.setItem('musicPlayerAuthenticated', 'true');
-                // Redirect to main app
+                sessionStorage.setItem('isAdmin', 'true');
+                window.location.href = 'index.html';
+            } else if (enteredPassword === CORRECT_PASSWORD) {
+                // Regular user login
+                sessionStorage.setItem('musicPlayerAuthenticated', 'true');
+                sessionStorage.setItem('isAdmin', 'false');
                 window.location.href = 'index.html';
             } else {
                 // Show error
