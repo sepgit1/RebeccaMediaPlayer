@@ -13,6 +13,7 @@ class MusicPlayer {
         this.updateSongCounter();
         this.checkEmptyState();
         this.loadSettings();
+        this.displayUserName();
         
         // PWA install prompt
         this.initializePWA();
@@ -749,6 +750,14 @@ class MusicPlayer {
                 btn.classList.add('active');
             }
         });
+    }
+
+    displayUserName() {
+        const userName = sessionStorage.getItem('userName') || 'User';
+        const userNameElement = document.getElementById('userName');
+        if (userNameElement) {
+            userNameElement.textContent = `👤 ${userName}`;
+        }
     }
 }
 
