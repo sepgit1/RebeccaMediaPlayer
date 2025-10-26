@@ -12,6 +12,33 @@ class MusicPlayer {
         // Detect if running as installed PWA
         this.isInstalledPWA = this.detectInstalledPWA();
         
+        // Color palette definitions: 3 families, 4 variants each (dark, medium, light, accent)
+        this.colorPalettes = {
+            maroon: {
+                name: 'Maroon',
+                dark: '#5a0000',
+                medium: '#8b0000',
+                light: '#c41e3a',
+                accent: '#ff3d3d'
+            },
+            cyan: {
+                name: 'Cyan',
+                dark: '#001a40',
+                medium: '#0066ff',
+                light: '#00d4ff',
+                accent: '#33e0ff'
+            },
+            forest: {
+                name: 'Forest',
+                dark: '#0d3d0d',
+                medium: '#228b22',
+                light: '#00b894',
+                accent: '#55efc4'
+            }
+        };
+        
+        this.currentColorFamily = localStorage.getItem('mediaPlayerColorFamily') || 'maroon';
+        
         this.initializeElements();
         this.bindEvents();
         this.loadPlaylist();
@@ -1040,13 +1067,8 @@ class MusicPlayer {
             });
         });
 
-        // Color buttons
-        document.querySelectorAll('.color-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const color = e.target.getAttribute('data-color');
-                this.applyColorScheme(color);
-            });
-        });
+        // Render and bind color family palette
+        this.renderColorFamilies();
 
         // Update Settings button
         const updateSettingsBtn = document.getElementById('updateSettingsBtn');
@@ -1136,6 +1158,83 @@ class MusicPlayer {
         this.updateSettingsUI();
         this.showNotification(`🌓 ${theme.charAt(0).toUpperCase() + theme.slice(1)} mode activated`);
     }
+
+    renderColorFamilies() {
+        const container = document.getElementById('colorFamilies');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        Object.entries(this.colorPalettes).forEach(([familyKey, palette]) => {
+            const familyGroup = document.createElement('div');
+            familyGroup.className = 'color-family-group';
+
+            const paletteDiv = document.createElement('div');
+            paletteDiv.className = 'color-palette';
+
+            ['dark', 'medium', 'light', 'accent'].forEach(variant => {
+                const colorBtn = document.createElement('div');
+                colorBtn.className = 'palette-color';
+                colorBtn.style.background = palette[variant];
+                colorBtn.title = `${palette.name} - ${variant}`;
+                colorBtn.dataset.family = familyKey;
+                colorBtn.dataset.variant = variant;
+
+                if (this.currentColorFamily === familyKey && localStorage.getItem('mediaPlayerColorVariant') === variant) {
+                    colorBtn.classList.add('active');
+                }
+
+                colorBtn.addEventListener('click', () => {
+                    this.applyColorFamily(familyKey, variant, palette);
+                });
+
+                paletteDiv.appendChild(colorBtn);
+            });
+
+            const label = document.createElement('div');
+            label.style.fontSize = '0.85rem';
+            label.style.color = 'rgba(255, 255, 255, 0.7)';
+            label.textContent = palette.name;
+
+            familyGroup.appendChild(paletteDiv);
+            familyGroup.appendChild(label);
+            container.appendChild(familyGroup);
+        });
+    }
+
+    applyColorFamily(familyKey, variant, palette) {
+        this.currentColorFamily = familyKey;
+        localStorage.setItem('mediaPlayerColorFamily', familyKey);
+        localStorage.setItem('mediaPlayerColorVariant', variant);
+
+        // Update CSS custom properties
+        document.documentElement.style.setProperty('--primary-color', palette[variant]);
+        document.documentElement.style.setProperty('--secondary-color', palette.dark);
+        document.documentElement.style.setProperty('--tertiary-color', palette.light);
+
+        // Update active button states
+        document.querySelectorAll('.palette-color').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.family === familyKey && btn.dataset.variant === variant) {
+                btn.classList.add('active');
+            }
+        });
+
+        // Update dynamic shapes colors
+        this.updateShapesColors(palette);
+
+        this.showNotification(`🎨 Color changed to ${palette.name} - ${variant}`);
+    }
+
+    updateShapesColors(palette) {
+        // Update canvas shape colors to match the new palette
+        const shapes = this.shapes || [];
+        shapes.forEach(shape => {
+            const variants = [palette.dark, palette.medium, palette.light, palette.accent];
+            shape.color = variants[Math.floor(Math.random() * variants.length)];
+        });
+    }
+
 
     applyColorScheme(color) {
         // Remove all color theme classes
@@ -1481,15 +1580,13 @@ class MusicPlayer {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         
-        // Maroon/purple color palette for triangles
+        // Get current palette colors
+        const palette = this.colorPalettes[this.currentColorFamily];
         const colors = [
-            'hsl(0, 100%, 50%)',       // Red
-            'hsl(330, 100%, 50%)',     // Magenta
-            'hsl(300, 100%, 50%)',     // Purple
-            'hsl(280, 100%, 50%)',     // Deep purple
-            'hsl(330, 100%, 55%)',     // Hot pink
-            'hsl(0, 80%, 45%)',        // Dark red
-            'hsl(330, 100%, 45%)',     // Dark magenta
+            palette.dark,
+            palette.medium,
+            palette.light,
+            palette.accent
         ];
         
         // Draw triangle utility
@@ -1519,21 +1616,21 @@ class MusicPlayer {
             reset() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = 5 + Math.random() * 120;  // Much wider range: 5px to 125px
+                this.size = 5 + Math.random() * 120;
                 this.color = colors[Math.floor(Math.random() * colors.length)];
                 this.rotation = Math.random() * Math.PI * 2;
-                this.vx = (Math.random() - 0.5) * 2.5;  // More varied velocity
+                this.vx = (Math.random() - 0.5) * 2.5;
                 this.vy = (Math.random() - 0.5) * 2.5;
-                this.lineLength = 30 + Math.random() * 200;  // More varied line lengths
-                this.opacity = 0.2 + Math.random() * 0.6;  // More opacity variation
-                this.rotationSpeed = (Math.random() - 0.5) * 0.1;  // Individual rotation speeds
-                this.lineCount = 1 + Math.floor(Math.random() * 5);  // 1-5 random lines per shape
+                this.lineLength = 30 + Math.random() * 200;
+                this.opacity = 0.2 + Math.random() * 0.6;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.1;
+                this.lineCount = 1 + Math.floor(Math.random() * 5);
             }
             
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.rotation += this.rotationSpeed;  // Individual rotation
+                this.rotation += this.rotationSpeed;
                 
                 // Draw connecting lines to random nearby points
                 for (let i = 0; i < this.lineCount; i++) {
@@ -1546,7 +1643,7 @@ class MusicPlayer {
                     ctx.lineTo(lineEndX, lineEndY);
                     ctx.strokeStyle = this.color;
                     ctx.globalAlpha = this.opacity * 0.5;
-                    ctx.lineWidth = 0.5 + Math.random() * 2;  // Random line widths
+                    ctx.lineWidth = 0.5 + Math.random() * 2;
                     ctx.stroke();
                 }
                 
@@ -1564,6 +1661,7 @@ class MusicPlayer {
         }
         
         const shapes = [];
+        this.shapes = shapes;  // Store shapes reference for color updates
         const SHAPE_COUNT = 25;
         for (let i = 0; i < SHAPE_COUNT; i++) {
             shapes.push(new Shape());

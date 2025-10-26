@@ -5,6 +5,13 @@
     box-sizing: border-box;
 }
 
+:root {
+    --primary-color: #c41e3a;
+    --secondary-color: #8b0000;
+    --tertiary-color: #5a0000;
+    --accent-color: #ff3d3d;
+}
+
 body {
     font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
     background: linear-gradient(135deg, #2d1a2d 0%, #3a1f1f 50%, #2d1f2d 100%);
@@ -1808,6 +1815,7 @@ body::after {
     display: flex;
     gap: 12px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .color-btn {
@@ -1827,6 +1835,44 @@ body::after {
 .color-btn.active {
     border-color: #ffffff;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.color-families {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.color-family-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+.color-palette {
+    display: flex;
+    gap: 8px;
+}
+
+.palette-color {
+    width: 35px;
+    height: 35px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.palette-color:hover {
+    transform: scale(1.1);
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.palette-color.active {
+    border-color: #ffffff;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
 }
 
 .toggle-option {
