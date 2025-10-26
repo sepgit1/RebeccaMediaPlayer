@@ -937,8 +937,6 @@ class MusicPlayer {
     }
 
     updateCCText(songName) {
-        if (!this.ccEnabled) return;
-        
         const ccText = document.getElementById('ccText');
         ccText.textContent = `♪ ${songName} ♪`;
     }
