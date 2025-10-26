@@ -1260,19 +1260,38 @@ class MusicPlayer {
     initializeAudioContext() {
         // Only initialize once
         if (this.audioContext && this.audioSource) {
+            console.log('Audio context already initialized');
             return;
         }
 
         try {
-            // Create audio context
+            // Create audio context with proper error handling
             if (!this.audioContext) {
-                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                console.log('Web Audio API context created');
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) {
+                    console.error('Web Audio API not supported in this browser');
+                    return;
+                }
+                this.audioContext = new AudioContext();
+                console.log('✓ Web Audio API context created:', this.audioContext);
+            }
+
+            // Verify audio context was created
+            if (!this.audioContext) {
+                console.error('Failed to create audio context');
+                return;
             }
 
             // Create audio source from the audio element
             if (!this.audioSource && this.audio) {
+                // Verify the audio context has the required method
+                if (typeof this.audioContext.createMediaElementAudioSource !== 'function') {
+                    console.error('Audio context does not have createMediaElementAudioSource method');
+                    return;
+                }
+
                 this.audioSource = this.audioContext.createMediaElementAudioSource(this.audio);
+                console.log('✓ Audio source created from audio element');
                 
                 // Create filter nodes
                 this.bassFilter = this.audioContext.createBiquadFilter();
@@ -1302,13 +1321,16 @@ class MusicPlayer {
 
                 this.gainNode.gain.value = 1.0;
                 
-                console.log('Audio nodes connected and ready');
+                console.log('✓ Audio nodes connected and ready');
+                console.log('Audio chain:', 'Source → Bass → Mid → Treble → Gain → Analyser → Output');
                 
                 // Apply current audio mode
                 this.applyAudioModeEffects(this.audioMode);
             }
         } catch (e) {
-            console.log('Error initializing Web Audio API:', e.message);
+            console.error('Error initializing Web Audio API:', e);
+            console.error('Error message:', e.message);
+            console.error('Error stack:', e.stack);
         }
     }
 
