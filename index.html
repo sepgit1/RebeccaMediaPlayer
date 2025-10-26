@@ -19,6 +19,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Rebecca Media Player">
+    <!-- iOS video inline playback (prevent fullscreen) -->
+    <meta name="apple-mobile-web-app-status-bar" content="black">
     <!-- Cache bust: 2025-10-26-v5 -->
     
     <!-- PWA Manifest -->
@@ -72,7 +74,7 @@
         <!-- Video Player (YouTube-style embedded box) -->
         <div id="videoContainer" class="video-container-box" style="display: none;">
             <div class="video-box-wrapper">
-                <video id="videoPlayer" class="video-box-player">
+                <video id="videoPlayer" class="video-box-player" playsinline webkit-playsinline>
                     Your browser does not support the video tag.
                 </video>
                 <div class="video-box-controls">

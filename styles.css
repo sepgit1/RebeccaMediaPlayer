@@ -360,6 +360,10 @@ body::after {
     display: block;
     object-fit: contain;
     background: #000;
+    /* Force inline playback on iOS */
+    -webkit-user-select: none;
+    user-select: none;
+    max-height: 280px;
 }
 
 .video-box-controls {
