@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rebecca Media Player</title>
     
+    <script>
+        // Check if user is authenticated
+        if (sessionStorage.getItem('musicPlayerAuthenticated') !== 'true') {
+            window.location.href = 'login.html';
+        }
+    </script>
+    
     <!-- PWA Meta Tags -->
     <meta name="description" content="Rebecca's elegant and futuristic media player with up to 100 songs">
     <meta name="theme-color" content="#ff1493">
