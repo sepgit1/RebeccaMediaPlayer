@@ -1392,6 +1392,54 @@ body.red-theme {
     font-weight: 600;
 }
 
+.privacy-section {
+    background: linear-gradient(135deg, rgba(0, 184, 148, 0.1), rgba(85, 239, 196, 0.05));
+    border: 1px solid rgba(0, 184, 148, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.privacy-info {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 3px solid #00b894;
+}
+
+.privacy-info p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 8px 0;
+    font-size: 0.95rem;
+}
+
+.privacy-info p:first-child {
+    font-weight: 600;
+    color: #55efc4;
+    margin-bottom: 12px;
+}
+
+.privacy-info ul {
+    list-style: none;
+    margin: 10px 0;
+    padding-left: 0;
+}
+
+.privacy-info li {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 6px 0;
+    font-size: 0.9rem;
+    padding-left: 20px;
+    position: relative;
+}
+
+.privacy-info li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #00b894;
+    font-weight: bold;
+}
+
 .version-info {
     background: rgba(255, 255, 255, 0.05);
     padding: 12px;
