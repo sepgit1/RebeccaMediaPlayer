@@ -179,6 +179,10 @@ class MusicPlayer {
         this.songs.forEach((song, index) => {
             const li = document.createElement('li');
             li.className = 'playlist-item';
+            
+            const deleteButton = this.isAdmin() ? 
+                `<button class="action-btn" onclick="musicPlayer.removeSong(${index})" title="Remove">🗑️</button>` : '';
+            
             li.innerHTML = `
                 <div class="song-details">
                     <h4>${this.escapeHtml(song.name)}</h4>
@@ -186,7 +190,7 @@ class MusicPlayer {
                 </div>
                 <div class="song-actions">
                     <button class="action-btn" onclick="musicPlayer.playSong(${index})" title="Play">▶️</button>
-                    <button class="action-btn" onclick="musicPlayer.removeSong(${index})" title="Remove">🗑️</button>
+                    ${deleteButton}
                 </div>
             `;
             
@@ -249,7 +253,16 @@ class MusicPlayer {
         }
     }
 
+    isAdmin() {
+        return sessionStorage.getItem('isAdmin') === 'true';
+    }
+
     removeSong(index) {
+        if (!this.isAdmin()) {
+            this.showNotification('❌ Only admins can delete songs');
+            return;
+        }
+
         if (confirm('Are you sure you want to remove this song?')) {
             // Revoke the object URL to free up memory
             if (this.songs[index].url) {
@@ -276,10 +289,16 @@ class MusicPlayer {
             this.loadPlaylist();
             this.updateSongCounter();
             this.checkEmptyState();
+            this.showNotification('🗑️ Song removed');
         }
     }
 
     clearAllSongs() {
+        if (!this.isAdmin()) {
+            this.showNotification('❌ Only admins can clear all songs');
+            return;
+        }
+
         if (this.songs.length === 0) return;
         
         if (confirm('Are you sure you want to remove all songs? This cannot be undone.')) {
@@ -609,6 +628,7 @@ class MusicPlayer {
         this.applyTheme(savedTheme);
         this.applyColorScheme(savedColor);
         this.setupSettingsModal();
+        this.updateAdminUI();
         
         // Set animation toggle
         const animationsToggle = document.getElementById('animationsToggle');
@@ -619,6 +639,13 @@ class MusicPlayer {
                 document.body.style.animation = e.target.checked ? '' : 'none';
                 this.showNotification(e.target.checked ? '✨ Animations enabled' : '⚡ Animations disabled');
             });
+        }
+    }
+
+    updateAdminUI() {
+        // Hide clear all button for non-admins
+        if (!this.isAdmin()) {
+            this.clearAllBtn.style.display = 'none';
         }
     }
 
