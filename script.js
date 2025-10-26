@@ -9,6 +9,9 @@ class MusicPlayer {
         this.maxSongs = 500;
         this.ccEnabled = false;
         
+        // Detect if running as installed PWA
+        this.isInstalledPWA = this.detectInstalledPWA();
+        
         this.initializeElements();
         this.bindEvents();
         this.loadPlaylist();
@@ -20,6 +23,14 @@ class MusicPlayer {
         
         // PWA install prompt
         this.initializePWA();
+    }
+
+    detectInstalledPWA() {
+        // Check if app is running as installed PWA
+        return window.matchMedia('(display-mode: standalone)').matches ||
+               window.matchMedia('(display-mode: fullscreen)').matches ||
+               window.matchMedia('(display-mode: minimal-ui)').matches ||
+               navigator.standalone === true;
     }
 
     initializeElements() {
@@ -368,6 +379,27 @@ class MusicPlayer {
                 this.mediaIcon.textContent = '🎬';
                 this.video.src = song.url;
                 this.video.load();
+                
+                // CRITICAL: Disable ALL fullscreen functionality
+                this.video.removeAttribute('allowfullscreen');
+                this.video.removeAttribute('webkitallowfullscreen');
+                this.video.removeAttribute('mozallowfullscreen');
+                this.video.setAttribute('controlsList', 'nofullscreen');
+                
+                // If running as installed PWA, add extra safeguards
+                if (this.isInstalledPWA) {
+                    // Prevent double-click from triggering fullscreen
+                    this.video.style.pointerEvents = 'none';
+                    this.videoContainer.style.pointerEvents = 'auto';
+                    
+                    // Prevent any fullscreen attempts through API
+                    this.video.addEventListener('fullscreenchange', (e) => {
+                        if (document.fullscreenElement) {
+                            document.exitFullscreen().catch(() => {});
+                        }
+                    });
+                }
+                
                 this.video.play().then(() => {
                     this.isPlaying = true;
                     this.updatePlayButton();
@@ -377,12 +409,12 @@ class MusicPlayer {
                     this.showNotification('Error playing this video. It might be corrupted.');
                 });
                 
-                // Add event listeners to prevent fullscreen takeover
-                this.video.onenterfullscreen = (e) => e.preventDefault();
+                // Prevent wheel/double-click interactions on video
                 this.video.onwheel = (e) => {
-                    if (document.fullscreenElement === this.video) {
-                        e.preventDefault();
-                    }
+                    e.preventDefault();
+                };
+                this.video.ondblclick = (e) => {
+                    e.preventDefault();
                 };
             } else {
                 this.videoContainer.style.display = 'none';
