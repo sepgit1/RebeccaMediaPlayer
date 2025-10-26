@@ -651,13 +651,45 @@ class MusicPlayer {
         const iosGuide = document.getElementById('iosInstallGuide');
         const closeIosGuide = document.getElementById('closeIosGuide');
         const installAppBtn = document.getElementById('installAppBtn');
+        const installBanner = document.getElementById('installBanner');
+        const closeBannerBtn = document.getElementById('closeBannerBtn');
+        const bannerText = document.getElementById('bannerText');
 
-        // Detect if iOS/Safari
+        // Detect device type
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+        const isChrome = /Chrome/.test(navigator.userAgent);
         const isStandalone = window.navigator.standalone === true;
 
-        console.log('PWA Detection:', { isIOS, isSafari, isStandalone });
+        console.log('PWA Detection:', { isIOS, isSafari, isChrome, isStandalone });
+
+        // Update banner text based on device
+        if (bannerText) {
+            if (isIOS && isChrome) {
+                bannerText.textContent = '📱 Chrome: Tap (⋯) menu → "Add to home screen"';
+            } else if (isIOS && isSafari) {
+                bannerText.textContent = '📱 Safari: Tap Share button (⬆️) → "Add to Home Screen"';
+            } else if (isChrome) {
+                bannerText.textContent = '📱 Tap the Install button (⬇️) in the top right corner';
+            } else {
+                bannerText.textContent = '📱 Install this app on your device!';
+            }
+        }
+
+        // Close banner button
+        if (closeBannerBtn) {
+            closeBannerBtn.addEventListener('click', () => {
+                if (installBanner) {
+                    installBanner.style.display = 'none';
+                    localStorage.setItem('installBannerDismissed', 'true');
+                }
+            });
+        }
+
+        // Check if banner was previously dismissed
+        if (localStorage.getItem('installBannerDismissed') === 'true' && installBanner) {
+            installBanner.style.display = 'none';
+        }
 
         // Listen for the beforeinstallprompt event (Chrome, Edge, Firefox Android)
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -738,6 +770,7 @@ class MusicPlayer {
         console.log('PWA Support Summary:', {
             isIOS,
             isSafari,
+            isChrome,
             isStandalone,
             hasBeforeInstallPrompt: 'onbeforeinstallprompt' in window,
             isSecure: window.location.protocol === 'https:',
