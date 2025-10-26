@@ -223,7 +223,6 @@ class MusicPlayer {
             li.innerHTML = `
                 <div class="song-details">
                     <h4>${this.escapeHtml(song.name)}</h4>
-                    <p>${this.escapeHtml(song.artist)}</p>
                 </div>
                 <div class="song-actions">
                     <button class="action-btn" onclick="musicPlayer.playSong(${index})" title="Play">▶️</button>
