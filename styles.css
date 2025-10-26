@@ -24,15 +24,16 @@ body::before {
     width: 100%;
     height: 100%;
     background: 
-        radial-gradient(circle at 20% 50%, rgba(255, 20, 147, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(138, 43, 226, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 20%, rgba(255, 105, 180, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 60% 60%, rgba(255, 20, 147, 0.08) 0%, transparent 50%);
+        radial-gradient(circle at 20% 50%, rgba(255, 20, 147, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(138, 43, 226, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(255, 105, 180, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 60% 60%, rgba(255, 20, 147, 0.1) 0%, transparent 50%);
     background-size: 
         400% 400%,
         400% 400%,
         400% 400%,
         400% 400%;
+    background-attachment: fixed;
     animation: gasFlow 15s ease-in-out infinite;
     pointer-events: none;
     z-index: 0;
@@ -46,11 +47,12 @@ body::after {
     width: 100%;
     height: 100%;
     background: 
-        radial-gradient(ellipse at 30% 70%, rgba(138, 43, 226, 0.12) 0%, transparent 40%),
-        radial-gradient(ellipse at 70% 30%, rgba(255, 105, 180, 0.1) 0%, transparent 40%);
+        radial-gradient(ellipse at 30% 70%, rgba(138, 43, 226, 0.15) 0%, transparent 40%),
+        radial-gradient(ellipse at 70% 30%, rgba(255, 105, 180, 0.15) 0%, transparent 40%);
     background-size: 
         300% 300%,
         300% 300%;
+    background-attachment: fixed;
     animation: gasFlow 20s ease-in-out infinite reverse;
     pointer-events: none;
     z-index: 0;
@@ -60,14 +62,17 @@ body::after {
     0% {
         background-position: 0% 0%, 100% 100%, 50% 50%, 0% 50%;
     }
-    25% {
+    20% {
         background-position: 25% 25%, 75% 75%, 75% 25%, 25% 75%;
     }
-    50% {
+    40% {
         background-position: 50% 50%, 50% 50%, 100% 0%, 50% 100%;
     }
-    75% {
+    60% {
         background-position: 75% 75%, 25% 25%, 25% 75%, 75% 25%;
+    }
+    80% {
+        background-position: 100% 100%, 0% 0%, 0% 100%, 100% 0%;
     }
     100% {
         background-position: 0% 0%, 100% 100%, 50% 50%, 0% 50%;
@@ -1144,6 +1149,8 @@ body::after {
     padding: 30px;
     max-width: 400px;
     width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
