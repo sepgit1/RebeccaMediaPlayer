@@ -103,7 +103,7 @@ body::after {
     position: relative;
     border: 1px solid rgba(255, 20, 147, 0.15);
     z-index: 1;
-    min-height: 90vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
@@ -358,7 +358,7 @@ body::after {
 
 .songs-list {
     list-style: none;
-    max-height: 300px;
+    max-height: 500px;
     overflow-y: auto;
     padding: 0;
     border-radius: 8px;
@@ -1192,8 +1192,8 @@ body::after {
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    margin-bottom: 12px;
-    padding: 20px;
+    margin-bottom: 6px;
+    padding: 10px;
     border-radius: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
