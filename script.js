@@ -1290,14 +1290,14 @@ class MusicPlayer {
             // Create audio source from the audio element
             if (!this.audioSource && this.audio) {
                 // Verify the audio context has the required method
-                if (typeof this.audioContext.createMediaElementAudioSource !== 'function') {
-                    console.error('Audio context does not have createMediaElementAudioSource method');
+                if (typeof this.audioContext.createMediaElementSource !== 'function') {
+                    console.error('Audio context does not have createMediaElementSource method');
                     return;
                 }
 
-                this.audioSource = this.audioContext.createMediaElementAudioSource(this.audio);
+                this.audioSource = this.audioContext.createMediaElementSource(this.audio);
                 console.log('✓ Audio source created from audio element');
-                
+
                 // Create filter nodes
                 this.bassFilter = this.audioContext.createBiquadFilter();
                 this.midFilter = this.audioContext.createBiquadFilter();
@@ -1325,17 +1325,17 @@ class MusicPlayer {
                 this.analyser.connect(this.audioContext.destination);
 
                 this.gainNode.gain.value = 1.0;
-                
+
                 console.log('✓ Audio nodes connected and ready');
                 console.log('Audio chain:', 'Source → Bass → Mid → Treble → Gain → Analyser → Output');
-                
+
                 // Apply current audio mode
                 this.applyAudioModeEffects(this.audioMode);
             }
         } catch (e) {
             console.error('Error initializing Web Audio API:', e);
-            console.error('Error message:', e.message);
-            console.error('Error stack:', e.stack);
+            if (e && e.message) console.error('Error message:', e.message);
+            if (e && e.stack) console.error('Error stack:', e.stack);
         }
     }
 

@@ -1,3 +1,22 @@
+.playlist-item .action-btn {
+    background: linear-gradient(135deg, #c800ff 0%, #8a2be2 50%, #2196f3 100%);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    margin-left: 8px;
+.playlist-item .action-btn:hover {
+    background: linear-gradient(135deg, #8b0000 0%, #c41e3a 100%);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+}
 /* Reset and Base Styles */
 * {
     margin: 0;
@@ -381,18 +400,31 @@ body::after {
     border-radius: 10px;
 }
 
-.songs-list::-webkit-scrollbar-thumb {
-    background: rgba(255, 20, 147, 0.5);
-    border-radius: 10px;
+.songs-list li {
+    display: flex;
+    align-items: center;
+    padding: 12px 18px;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    background: transparent;
+    box-shadow: 0 0 8px 0 rgba(255,20,147,0.15);
+    transition: background 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    border: 1.5px solid #ff1493;
+    border-radius: 25px;
 }
-
-.songs-list::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 20, 147, 0.8);
+ .playlist-item.active {
+    border: 2px solid #ff1493;
+    box-shadow: 0 0 12px 0 rgba(255,20,147,0.25);
+    border-radius: 25px;
 }
-
-/* Video Player - YouTube Style */
-.video-container-box {
-    width: 100%;
+}
+.playlist-item.active {
+    border: 2px solid #8a2be2;
+    box-shadow: 0 0 12px 0 rgba(138,43,226,0.25);
+    color: #fff;
+    font-weight: 500;
+    letter-spacing: 1px;
     margin-bottom: 20px;
     position: relative;
 }
@@ -684,7 +716,7 @@ body::after {
     font-size: 1.6rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    background: transparent;
+    background: linear-gradient(135deg, #ff1493 0%, #ffeb3b 25%, #00e676 50%, #2196f3 75%, #c800ff 100%);
     backdrop-filter: blur(0px);
     -webkit-backdrop-filter: blur(0px);
     color: #ffffff !important;
@@ -706,7 +738,7 @@ body::after {
     left: 0;
     right: 0;
     bottom: 0;
-    background: none;
+    background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
