@@ -126,7 +126,7 @@ body::after {
     -webkit-backdrop-filter: blur(25px);
     border-radius: 25px;
     position: relative;
-    z-index: 9999;
+    z-index: 1;
     position: relative;
     z-index: 2;
     box-shadow:
