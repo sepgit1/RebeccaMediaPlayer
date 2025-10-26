@@ -916,13 +916,17 @@ class MusicPlayer {
     toggleCC() {
         const ccDisplay = document.getElementById('ccDisplay');
         this.ccEnabled = !this.ccEnabled;
+        console.log('CC Toggled. Enabled:', this.ccEnabled, 'Element:', ccDisplay);
         
         if (this.ccEnabled) {
             ccDisplay.style.display = 'block';
             this.showNotification('CC enabled');
             const currentSong = this.songs[this.currentSongIndex];
             if (currentSong) {
+                console.log('Updating CC with song:', currentSong.name);
                 this.updateCCText(currentSong.name);
+            } else {
+                console.warn('No current song selected');
             }
         } else {
             ccDisplay.style.display = 'none';
@@ -938,7 +942,12 @@ class MusicPlayer {
 
     updateCCText(songName) {
         const ccText = document.getElementById('ccText');
-        ccText.textContent = `♪ ${songName} ♪`;
+        if (ccText) {
+            ccText.textContent = `♪ ${songName} ♪`;
+            console.log('CC Text updated:', ccText.textContent);
+        } else {
+            console.error('CC Text element not found');
+        }
     }
 
     addComment() {
@@ -989,15 +998,40 @@ class MusicPlayer {
             return;
         }
         
-        commentsList.innerHTML = songComments.map(comment => `
+        commentsList.innerHTML = songComments.map((comment, idx) => `
             <div class="comment-item">
                 <div class="comment-header">
                     <span class="comment-author">${this.escapeHtml(comment.author)}</span>
                     <span class="comment-time">${comment.timestamp}</span>
+                    <div class="comment-actions">
+                        <button class="comment-btn" onclick="musicPlayer.editComment('${songId}', ${idx})" title="Edit">✏️</button>
+                        <button class="comment-btn" onclick="musicPlayer.deleteComment('${songId}', ${idx})" title="Delete">🗑️</button>
+                    </div>
                 </div>
                 <div class="comment-text">${this.escapeHtml(comment.text)}</div>
             </div>
         `).join('');
+    }
+
+    editComment(songId, index) {
+        const comment = this.comments[songId][index];
+        const newText = prompt('Edit your comment:', comment.text);
+        
+        if (newText !== null && newText.trim() !== '') {
+            this.comments[songId][index].text = newText.trim();
+            localStorage.setItem('musicPlayerComments', JSON.stringify(this.comments));
+            this.displayComments();
+            this.showNotification('✓ Comment updated!');
+        }
+    }
+
+    deleteComment(songId, index) {
+        if (confirm('Delete this comment?')) {
+            this.comments[songId].splice(index, 1);
+            localStorage.setItem('musicPlayerComments', JSON.stringify(this.comments));
+            this.displayComments();
+            this.showNotification('✓ Comment deleted!');
+        }
     }
 
     displayUserName() {
