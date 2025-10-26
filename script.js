@@ -1230,7 +1230,17 @@ class MusicPlayer {
     setAudioMode(mode) {
         this.audioMode = mode;
         liveStorage.set('audioMode', mode);
-        this.applyAudioModeEffects(mode);
+        
+        // Resume audio context if suspended (required by browsers)
+        if (this.audioContext && this.audioContext.state === 'suspended') {
+            this.audioContext.resume().then(() => {
+                console.log('Audio context resumed');
+                this.applyAudioModeEffects(mode);
+            }).catch(err => console.log('Error resuming audio context:', err));
+        } else {
+            this.applyAudioModeEffects(mode);
+        }
+        
         this.showNotification(`🎵 Audio mode: ${this.getModeDisplayName(mode)}`);
     }
 
@@ -1305,11 +1315,14 @@ class MusicPlayer {
     applyAudioModeEffects(mode) {
         // Make sure audio context and filters exist
         if (!this.audioContext || !this.bassFilter || !this.midFilter || !this.trebleFilter) {
-            console.log('Audio nodes not initialized yet');
+            console.log('Audio nodes not initialized yet, cannot apply mode:', mode);
             return;
         }
 
-        // Reset all filters
+        console.log(`Applying audio mode: ${mode}`);
+        console.log('Audio Context State:', this.audioContext.state);
+
+        // Reset all filters first
         this.bassFilter.gain.value = 0;
         this.midFilter.gain.value = 0;
         this.trebleFilter.gain.value = 0;
@@ -1318,32 +1331,32 @@ class MusicPlayer {
         // Apply EQ for different modes
         switch(mode) {
             case 'treble':
-                // Boost treble (high frequencies)
+                // Boost treble (high frequencies) - 12dB boost
                 this.trebleFilter.gain.value = 12;
                 this.midFilter.gain.value = 3;
                 this.bassFilter.gain.value = -8;
-                console.log('🎸 Treble mode - high frequencies boosted');
+                console.log('🎸 Treble mode applied - bass:-8dB, mid:+3dB, treble:+12dB');
                 break;
             case 'bass':
-                // Boost bass (low frequencies)
+                // Boost bass (low frequencies) - 15dB boost
                 this.bassFilter.gain.value = 15;
                 this.midFilter.gain.value = -2;
                 this.trebleFilter.gain.value = -6;
-                console.log('🥁 Bass mode - low frequencies boosted');
+                console.log('🥁 Bass mode applied - bass:+15dB, mid:-2dB, treble:-6dB');
                 break;
             case 'earphones':
                 // Balanced for small drivers
                 this.bassFilter.gain.value = 5;
                 this.midFilter.gain.value = 3;
                 this.trebleFilter.gain.value = 4;
-                console.log('🎧 Earphones mode - optimized for earbuds');
+                console.log('🎧 Earphones mode applied - bass:+5dB, mid:+3dB, treble:+4dB');
                 break;
             case 'tv':
                 // Full spectrum for speaker systems
                 this.bassFilter.gain.value = 3;
                 this.midFilter.gain.value = 2;
                 this.trebleFilter.gain.value = 2;
-                console.log('📺 TV mode - optimized for speakers');
+                console.log('📺 TV mode applied - bass:+3dB, mid:+2dB, treble:+2dB');
                 break;
             case 'carradio':
                 // Compressed, punchy sound for car
@@ -1351,19 +1364,28 @@ class MusicPlayer {
                 this.midFilter.gain.value = 6;
                 this.trebleFilter.gain.value = 3;
                 this.gainNode.gain.value = 0.85;
-                console.log('🚗 Car Radio mode - optimized for car audio');
+                console.log('🚗 Car Radio mode applied - bass:+8dB, mid:+6dB, treble:+3dB, gain:0.85');
                 break;
             case 'bluetooth':
                 // Wireless speaker optimization
                 this.bassFilter.gain.value = 2;
                 this.midFilter.gain.value = 4;
                 this.trebleFilter.gain.value = 6;
-                console.log('🔵 Bluetooth mode - optimized for wireless speakers');
+                console.log('🔵 Bluetooth mode applied - bass:+2dB, mid:+4dB, treble:+6dB');
                 break;
             default:
                 // Normal/flat response
-                console.log('Normal audio mode - flat response');
+                console.log('Normal audio mode - flat response applied');
         }
+
+        // Log current filter values for debugging
+        console.log('Filter values:', {
+            bass: this.bassFilter.gain.value,
+            mid: this.midFilter.gain.value,
+            treble: this.trebleFilter.gain.value,
+            gain: this.gainNode.gain.value
+        });
+
     }
 
     updateModesUI() {
