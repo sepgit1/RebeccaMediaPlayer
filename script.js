@@ -1,7 +1,66 @@
+// Live Storage Manager - syncs changes across tabs and provides real-time updates
+class LiveStorageManager {
+    constructor() {
+        this.listeners = new Map();
+        this.storagePrefix = 'musicPlayer_';
+        this.setupStorageSync();
+    }
+
+    setupStorageSync() {
+        // Listen for storage changes from other tabs
+        window.addEventListener('storage', (e) => {
+            if (e.key && e.key.startsWith(this.storagePrefix)) {
+                const key = e.key.replace(this.storagePrefix, '');
+                const callbacks = this.listeners.get(key) || [];
+                callbacks.forEach(cb => cb(e.newValue ? JSON.parse(e.newValue) : null));
+            }
+        });
+    }
+
+    set(key, value) {
+        const fullKey = this.storagePrefix + key;
+        const jsonValue = JSON.stringify(value);
+        localStorage.setItem(fullKey, jsonValue);
+        // Trigger local listeners
+        const callbacks = this.listeners.get(key) || [];
+        callbacks.forEach(cb => cb(value));
+    }
+
+    get(key) {
+        const fullKey = this.storagePrefix + key;
+        const value = localStorage.getItem(fullKey);
+        return value ? JSON.parse(value) : null;
+    }
+
+    remove(key) {
+        const fullKey = this.storagePrefix + key;
+        localStorage.removeItem(fullKey);
+        const callbacks = this.listeners.get(key) || [];
+        callbacks.forEach(cb => cb(null));
+    }
+
+    onChange(key, callback) {
+        if (!this.listeners.has(key)) {
+            this.listeners.set(key, []);
+        }
+        this.listeners.get(key).push(callback);
+    }
+
+    offChange(key, callback) {
+        if (this.listeners.has(key)) {
+            const callbacks = this.listeners.get(key);
+            const index = callbacks.indexOf(callback);
+            if (index > -1) callbacks.splice(index, 1);
+        }
+    }
+}
+
+const liveStorage = new LiveStorageManager();
+
 class MusicPlayer {
     constructor() {
-        this.songs = JSON.parse(localStorage.getItem('musicPlayerSongs')) || [];
-        this.comments = JSON.parse(localStorage.getItem('musicPlayerComments')) || {};
+        this.songs = liveStorage.get('songs') || [];
+        this.comments = liveStorage.get('comments') || {};
         this.currentSongIndex = 0;
         this.isPlaying = false;
         this.isShuffled = false;
@@ -53,6 +112,29 @@ class MusicPlayer {
         
         // Initialize dynamic shapes animation
         this.initializeDynamicShapes();
+        
+        // Setup live storage listeners for cross-tab synchronization
+        this.setupLiveStorageListeners();
+    }
+
+    setupLiveStorageListeners() {
+        // Listen for songs changes from other tabs
+        liveStorage.onChange('songs', (newSongs) => {
+            if (newSongs && Array.isArray(newSongs)) {
+                this.songs = newSongs;
+                this.renderPlaylist();
+                this.updateSongCounter();
+                this.checkEmptyState();
+            }
+        });
+
+        // Listen for comments changes from other tabs
+        liveStorage.onChange('comments', (newComments) => {
+            if (newComments && typeof newComments === 'object') {
+                this.comments = newComments;
+                this.renderPlaylist();
+            }
+        });
     }
 
     detectInstalledPWA() {
@@ -302,7 +384,7 @@ class MusicPlayer {
             fileName: song.file ? song.file.name : null
         }));
         
-        localStorage.setItem('musicPlayerSongs', JSON.stringify(songsForStorage));
+        liveStorage.set('songs', songsForStorage);
     }
 
     loadPlaylist() {
@@ -1294,7 +1376,7 @@ class MusicPlayer {
         };
         
         this.comments[songId].push(comment);
-        localStorage.setItem('musicPlayerComments', JSON.stringify(this.comments));
+        liveStorage.set('comments', this.comments);
         
         commentInput.value = '';
         this.displayComments();
@@ -1335,7 +1417,7 @@ class MusicPlayer {
         
         if (newText !== null && newText.trim() !== '') {
             this.comments[songId][index].text = newText.trim();
-            localStorage.setItem('musicPlayerComments', JSON.stringify(this.comments));
+            liveStorage.set('comments', this.comments);
             this.displayComments();
             this.showNotification('✓ Comment updated!');
         }
@@ -1344,7 +1426,7 @@ class MusicPlayer {
     deleteComment(songId, index) {
         if (confirm('Delete this comment?')) {
             this.comments[songId].splice(index, 1);
-            localStorage.setItem('musicPlayerComments', JSON.stringify(this.comments));
+            liveStorage.set('comments', this.comments);
             this.displayComments();
             this.showNotification('✓ Comment deleted!');
         }
@@ -1452,12 +1534,12 @@ class MusicPlayer {
             
             if (data.playlist) {
                 this.songs = data.playlist;
-                localStorage.setItem('musicPlayerSongs', JSON.stringify(this.songs));
+                liveStorage.set('songs', this.songs);
             }
             
             if (data.comments) {
                 this.comments = data.comments;
-                localStorage.setItem('musicPlayerComments', JSON.stringify(this.comments));
+                liveStorage.set('comments', this.comments);
             }
             
             this.loadPlaylist();
