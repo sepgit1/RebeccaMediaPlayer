@@ -1481,121 +1481,127 @@ class MusicPlayer {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         
-        // Color palette matching maroon/purple theme
+        // Maroon/purple color palette for triangles
         const colors = [
-            { r: 255, g: 20, b: 147 },    // Deep pink
-            { r: 138, g: 43, b: 226 },    // Maroon-purple
-            { r: 255, g: 105, b: 180 },   // Hot pink
-            { r: 128, g: 0, b: 0 },       // Maroon
-            { r: 199, g: 21, b: 133 }     // Medium violet red
+            'hsl(0, 100%, 50%)',       // Red
+            'hsl(330, 100%, 50%)',     // Magenta
+            'hsl(300, 100%, 50%)',     // Purple
+            'hsl(280, 100%, 50%)',     // Deep purple
+            'hsl(330, 100%, 55%)',     // Hot pink
+            'hsl(0, 80%, 45%)',        // Dark red
+            'hsl(330, 100%, 45%)',     // Dark magenta
         ];
         
-        // Create animated particles with GSAP
-        const particles = [];
-        const particleCount = 8;
+        // Draw triangle utility
+        const drawTriangle = (x, y, size, rotation, color) => {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rotation);
+            ctx.beginPath();
+            ctx.moveTo(0, -size);
+            ctx.lineTo(size, size);
+            ctx.lineTo(-size, size);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.restore();
+        };
         
-        for (let i = 0; i < particleCount; i++) {
-            const particle = {
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 2,
-                vy: (Math.random() - 0.5) * 2,
-                radius: Math.random() * 150 + 50,
-                color: colors[Math.floor(Math.random() * colors.length)],
-                shapeType: Math.floor(Math.random() * 4), // 0: circle, 1: square, 2: triangle, 3: hexagon
-                rotation: 0,
-                opacity: 0.3 + Math.random() * 0.3
-            };
+        // Shape class with triangles and lines
+        class Shape {
+            constructor() {
+                this.reset();
+            }
             
-            particles.push(particle);
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = 5 + Math.random() * 120;  // Much wider range: 5px to 125px
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.rotation = Math.random() * Math.PI * 2;
+                this.vx = (Math.random() - 0.5) * 2.5;  // More varied velocity
+                this.vy = (Math.random() - 0.5) * 2.5;
+                this.lineLength = 30 + Math.random() * 200;  // More varied line lengths
+                this.opacity = 0.2 + Math.random() * 0.6;  // More opacity variation
+                this.rotationSpeed = (Math.random() - 0.5) * 0.1;  // Individual rotation speeds
+                this.lineCount = 1 + Math.floor(Math.random() * 5);  // 1-5 random lines per shape
+            }
             
-            // Animate with GSAP - smooth infinite movement
-            gsap.to(particle, {
-                x: () => Math.random() * canvas.width,
-                y: () => Math.random() * canvas.height,
-                duration: 8 + Math.random() * 6,
-                ease: "sine.inOut",
-                repeat: -1,
-                yoyo: true
-            });
-            
-            // Scale pulse animation
-            gsap.to(particle, {
-                radius: () => particle.radius * (0.6 + Math.random() * 0.8),
-                duration: 3 + Math.random() * 2,
-                ease: "sine.inOut",
-                repeat: -1,
-                yoyo: true
-            });
-            
-            // Rotation animation
-            gsap.to(particle, {
-                rotation: Math.PI * 2,
-                duration: 10 + Math.random() * 5,
-                ease: "none",
-                repeat: -1
-            });
-        }
-        
-        // Draw function
-        const draw = () => {
-            // Clear with semi-transparent background for trail effect
-            ctx.fillStyle = 'rgba(45, 26, 45, 0.08)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw each particle
-            particles.forEach((particle) => {
-                ctx.save();
-                ctx.translate(particle.x, particle.y);
-                ctx.rotate(particle.rotation);
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.rotation += this.rotationSpeed;  // Individual rotation
                 
-                const color = particle.color;
-                ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${particle.opacity})`;
-                ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${particle.opacity * 0.7})`;
-                ctx.lineWidth = 2;
-                
-                if (particle.shapeType === 0) {
-                    // Circle
+                // Draw connecting lines to random nearby points
+                for (let i = 0; i < this.lineCount; i++) {
+                    const angle = (Math.PI * 2 / this.lineCount) * i + (Math.random() - 0.5) * 0.5;
+                    const lineEndX = this.x + Math.cos(angle) * this.lineLength;
+                    const lineEndY = this.y + Math.sin(angle) * this.lineLength;
+                    
                     ctx.beginPath();
-                    ctx.arc(0, 0, particle.radius, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
-                } else if (particle.shapeType === 1) {
-                    // Square
-                    const size = particle.radius;
-                    ctx.fillRect(-size / 2, -size / 2, size, size);
-                    ctx.strokeRect(-size / 2, -size / 2, size, size);
-                } else if (particle.shapeType === 2) {
-                    // Triangle
-                    ctx.beginPath();
-                    ctx.moveTo(0, -particle.radius);
-                    ctx.lineTo(particle.radius, particle.radius);
-                    ctx.lineTo(-particle.radius, particle.radius);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.stroke();
-                } else if (particle.shapeType === 3) {
-                    // Hexagon
-                    ctx.beginPath();
-                    for (let i = 0; i < 6; i++) {
-                        const angle = (i * Math.PI) / 3;
-                        const x = Math.cos(angle) * particle.radius;
-                        const y = Math.sin(angle) * particle.radius;
-                        if (i === 0) ctx.moveTo(x, y);
-                        else ctx.lineTo(x, y);
-                    }
-                    ctx.closePath();
-                    ctx.fill();
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(lineEndX, lineEndY);
+                    ctx.strokeStyle = this.color;
+                    ctx.globalAlpha = this.opacity * 0.5;
+                    ctx.lineWidth = 0.5 + Math.random() * 2;  // Random line widths
                     ctx.stroke();
                 }
                 
-                ctx.restore();
+                // Draw triangle
+                ctx.globalAlpha = this.opacity;
+                drawTriangle(this.x, this.y, this.size, this.rotation, this.color);
+                ctx.globalAlpha = 1;
+                
+                // Reset if out of bounds
+                if (this.x < -this.size * 2 || this.x > canvas.width + this.size * 2 ||
+                    this.y < -this.size * 2 || this.y > canvas.height + this.size * 2) {
+                    this.reset();
+                }
+            }
+        }
+        
+        const shapes = [];
+        const SHAPE_COUNT = 25;
+        for (let i = 0; i < SHAPE_COUNT; i++) {
+            shapes.push(new Shape());
+        }
+        
+        // Animation loop
+        const animate = () => {
+            // Semi-transparent clear for trail effect
+            ctx.fillStyle = 'rgba(45, 26, 45, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            shapes.forEach(shape => {
+                shape.update();
             });
             
-            requestAnimationFrame(draw);
+            requestAnimationFrame(animate);
         };
+        animate();
         
-        draw();
+        // GSAP animations for rotation and pulsing
+        gsap.to(shapes, {
+            rotation: '+=6.28',  // Full rotation
+            duration: 4 + Math.random() * 3,
+            repeat: -1,
+            ease: "linear",
+            onUpdate: () => {
+                // Continuously update
+            }
+        });
+        
+        // Pulsing size animation
+        gsap.to(shapes, {
+            size: (i, target) => target.size * 1.3,
+            duration: 2,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+        });
         
         // Handle window resize
         window.addEventListener('resize', () => {
