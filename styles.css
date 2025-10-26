@@ -392,7 +392,7 @@ body::after {
 
 .video-box-wrapper {
     width: 100%;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 16 / 9;
     background: #000;
     border-radius: 12px;
     overflow: hidden;
@@ -670,11 +670,11 @@ body::after {
 }
 
 .control-btn {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     border: none;
     border-radius: 50%;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     cursor: pointer;
     transition: all 0.3s ease;
     background: rgba(128, 0, 0, 0.7);
@@ -687,6 +687,9 @@ body::after {
         inset 0 1px 0 rgba(255, 255, 255, 0.15);
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .control-btn::before {
@@ -718,9 +721,9 @@ body::after {
 }
 
 .play-pause {
-    width: 90px;
-    height: 90px;
-    font-size: 2.5rem;
+    width: 80px;
+    height: 80px;
+    font-size: 2.2rem;
     color: #ffffff;
     background: linear-gradient(135deg,
         rgba(128, 0, 0, 0.8),
@@ -730,6 +733,9 @@ body::after {
         0 10px 30px rgba(128, 0, 0, 0.4),
         0 0 0 1px rgba(255, 255, 255, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .control-btn.active {
