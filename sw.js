@@ -15,51 +15,100 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        // Only cache files that exist and are important
+        const criticalUrls = [
+          './',
+          './index.html',
+          './styles.css',
+          './script.js',
+          './manifest.json'
+        ];
+        
+        return cache.addAll(criticalUrls)
+          .catch((error) => {
+            console.log('Cache addAll failed, trying individual caching:', error);
+            // Try to cache each file individually
+            return Promise.all(
+              criticalUrls.map(url => 
+                fetch(url)
+                  .then(response => {
+                    if (response.ok) {
+                      return cache.put(url, response);
+                    }
+                  })
+                  .catch(err => console.log(`Failed to cache ${url}:`, err))
+              )
+            );
+          });
       })
       .catch((error) => {
-        console.log('Cache failed:', error);
+        console.log('Cache opening failed:', error);
       })
   );
 });
 
 // Fetch event - serve from cache when offline
 self.addEventListener('fetch', (event) => {
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Return cached version or fetch from network
+        // Return cached version if available
         if (response) {
           return response;
         }
         
-        // Don't cache audio files or blob URLs
-        if (event.request.url.startsWith('blob:') || 
-            event.request.url.includes('audio/') ||
-            event.request.headers.get('accept')?.includes('audio/')) {
-          return fetch(event.request);
+        // Don't cache blob URLs or try to fetch them
+        if (event.request.url.startsWith('blob:')) {
+          return fetch(event.request).catch(() => {
+            // Return a blank response if fetch fails for blob URLs
+            return new Response('', {status: 200});
+          });
         }
         
-        return fetch(event.request).then(
-          (response) => {
+        // Fetch from network
+        return fetch(event.request)
+          .then((response) => {
             // Check if we received a valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
+            if (!response || response.status !== 200 || response.type === 'error') {
               return response;
             }
 
-            // Clone the response
+            // Don't cache if it's not a basic response
+            if (response.type !== 'basic' && response.type !== 'cors') {
+              return response;
+            }
+
+            // Clone the response for caching
             const responseToCache = response.clone();
 
             caches.open(CACHE_NAME)
               .then((cache) => {
                 cache.put(event.request, responseToCache);
+              })
+              .catch((error) => {
+                console.log('Cache put failed:', error);
               });
 
             return response;
-          }
-        );
-      }
-    )
+          })
+          .catch((error) => {
+            console.log('Network request failed, returning cached or offline response:', error);
+            // Return a cached response if available, otherwise offline page
+            return caches.match(event.request)
+              .then((cachedResponse) => {
+                return cachedResponse || new Response('Offline - page not cached', {status: 503});
+              });
+          });
+      })
+      .catch((error) => {
+        console.log('Cache match failed:', error);
+        return new Response('Service Worker Error', {status: 500});
+      })
   );
 });
 
