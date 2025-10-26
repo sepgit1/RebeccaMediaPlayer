@@ -27,8 +27,8 @@
     <link rel="manifest" href="manifest.json">
     
     <!-- Icons -->
-    <link rel="icon" type="image/svg+xml" sizes="192x192" href="icons/icon-192x192.svg">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css?v=2025-10-26-v5">
@@ -43,7 +43,7 @@
     <div class="container">
         
     <!-- Dynamic Animated Shapes Canvas - Always behind player -->
-    <canvas id="dynamicShapesCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;"></canvas>
+    <canvas id="dynamicShapesCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -9999; pointer-events: none; opacity: 0.5;"></canvas>
         <!-- ALWAYS VISIBLE: Install Instructions Banner -->
         <div id="installBanner" class="install-banner">
             <div class="banner-content">
