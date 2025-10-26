@@ -61,12 +61,12 @@ class MusicPlayer {
         this.songCount = document.getElementById('songCount');
         
         // Playlist elements
-        this.playlist = document.getElementById('playlist');
+        this.playlist = document.getElementById('playlistContainer');
         this.emptyState = document.getElementById('emptyState');
         this.fileInput = document.getElementById('fileInput');
         this.clearAllBtn = document.getElementById('clearAllBtn');
-        this.searchInput = document.getElementById('searchInput');
-        this.sortSelect = document.getElementById('sortSelect');
+        this.searchInput = document.getElementById('searchInput') || null;
+        this.sortSelect = document.getElementById('sortSelect') || null;
     }
 
     bindEvents() {
@@ -96,9 +96,13 @@ class MusicPlayer {
         // Drag and drop
         this.setupDragAndDrop();
         
-        // Search and sort
-        this.searchInput.addEventListener('input', () => this.filterPlaylist());
-        this.sortSelect.addEventListener('change', () => this.sortPlaylist());
+        // Search and sort (if elements exist)
+        if (this.searchInput) {
+            this.searchInput.addEventListener('input', () => this.filterPlaylist());
+        }
+        if (this.sortSelect) {
+            this.sortSelect.addEventListener('change', () => this.sortPlaylist());
+        }
         
         // Video controls - DISABLE FULLSCREEN
         const expandVideoBtn = document.getElementById('expandVideoBtn');
