@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
-    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+    background: linear-gradient(135deg, #2d1a2d 0%, #3a1f1f 50%, #2d1f2d 100%);
     min-height: 100vh;
     color: #ffffff;
     padding: 20px;
@@ -26,14 +26,14 @@ body {
 .container {
     max-width: 900px;
     margin: 0 auto;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(45, 26, 45, 0.6);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
     border-radius: 25px;
     box-shadow:
-        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 20px 40px rgba(0, 0, 0, 0.5),
         0 0 0 1px rgba(255, 255, 255, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     overflow: hidden;
     position: relative;
 }
@@ -308,14 +308,14 @@ body {
     font-size: 1.8rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    color: rgba(255, 255, 255, 0.9);
+    color: #ffffff;
     box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.3),
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        0 8px 25px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
     position: relative;
     overflow: hidden;
 }
@@ -328,19 +328,20 @@ body {
     right: 0;
     bottom: 0;
     background: linear-gradient(135deg,
-        rgba(255, 20, 147, 0.2),
-        rgba(255, 105, 180, 0.1),
-        rgba(138, 43, 226, 0.2));
+        rgba(255, 20, 147, 0.15),
+        rgba(255, 105, 180, 0.08),
+        rgba(138, 43, 226, 0.15));
     opacity: 0;
     transition: opacity 0.3s ease;
 }
 
 .control-btn:hover {
     transform: translateY(-3px);
+    color: #ffffff;
     box-shadow:
-        0 12px 35px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(255, 255, 255, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        0 12px 35px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .control-btn:hover::before {
@@ -351,25 +352,27 @@ body {
     width: 90px;
     height: 90px;
     font-size: 2.5rem;
+    color: #ffffff;
     background: linear-gradient(135deg,
-        rgba(255, 20, 147, 0.4),
-        rgba(255, 105, 180, 0.3),
-        rgba(138, 43, 226, 0.4));
+        rgba(255, 20, 147, 0.3),
+        rgba(255, 105, 180, 0.2),
+        rgba(138, 43, 226, 0.3));
     box-shadow:
-        0 10px 30px rgba(255, 20, 147, 0.4),
+        0 10px 30px rgba(255, 20, 147, 0.3),
         0 0 0 1px rgba(255, 255, 255, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .control-btn.active {
+    color: #ffffff;
     background: linear-gradient(135deg,
-        rgba(255, 20, 147, 0.6),
-        rgba(255, 105, 180, 0.5),
-        rgba(138, 43, 226, 0.6));
+        rgba(255, 20, 147, 0.5),
+        rgba(255, 105, 180, 0.4),
+        rgba(138, 43, 226, 0.5));
     box-shadow:
-        0 10px 30px rgba(255, 20, 147, 0.5),
+        0 10px 30px rgba(255, 20, 147, 0.4),
         0 0 0 1px rgba(255, 255, 255, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 /* Volume */
