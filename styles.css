@@ -567,6 +567,10 @@ body::after {
     justify-content: center;
     font-style: italic;
     color: rgba(255, 255, 255, 0.9);
+    word-wrap: break-word;
+    white-space: normal;
+    overflow: visible;
+    max-height: none;
 }
 
 .close-cc-btn {
@@ -700,6 +704,8 @@ body::after {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .comment-author {
@@ -711,6 +717,29 @@ body::after {
 .comment-time {
     font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.5);
+}
+
+.comment-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.comment-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.comment-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #ffffff;
 }
 
 .comment-text {
