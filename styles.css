@@ -2040,9 +2040,9 @@ body.purple-theme {
 }
 
 body.blue-theme {
-    --primary-color: #0066ff;
-    --secondary-color: #00d4ff;
-    --tertiary-color: #00c0ff;
+    --primary-color: #800000;
+    --secondary-color: #8b0000;
+    --tertiary-color: #a52a2a;
 }
 
 body.green-theme {
