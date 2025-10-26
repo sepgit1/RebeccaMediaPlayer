@@ -1952,7 +1952,7 @@ class MusicPlayer {
         
         const shapes = [];
         this.shapes = shapes;  // Store shapes reference for color updates
-        const SHAPE_COUNT = 25;
+    const SHAPE_COUNT = 10;
         for (let i = 0; i < SHAPE_COUNT; i++) {
             shapes.push(new Shape());
         }
@@ -1974,7 +1974,7 @@ class MusicPlayer {
         // GSAP animations for rotation and pulsing
         gsap.to(shapes, {
             rotation: '+=6.28',  // Full rotation
-            duration: 4 + Math.random() * 3,
+            duration: 8 + Math.random() * 4,
             repeat: -1,
             ease: "linear",
             onUpdate: () => {
@@ -1984,8 +1984,8 @@ class MusicPlayer {
         
         // Pulsing size animation
         gsap.to(shapes, {
-            size: (i, target) => target.size * 1.3,
-            duration: 2,
+            size: (i, target) => target.size * 1.15,
+            duration: 4,
             repeat: -1,
             yoyo: true,
             ease: "sine.inOut"
@@ -2003,9 +2003,9 @@ class MusicPlayer {
 let musicPlayer;
 document.addEventListener('DOMContentLoaded', () => {
     musicPlayer = new MusicPlayer();
-    
-    // Initialize Google Drive sync in background
-    musicPlayer.initializeGoogleDriveSync().then(() => {
-        console.log('Google Drive sync initialized');
-    });
+    // Google Drive sync is disabled for now to avoid errors
+    // To re-enable, uncomment the lines below:
+    // musicPlayer.initializeGoogleDriveSync().then(() => {
+    //     console.log('Google Drive sync initialized');
+    // });
 });
