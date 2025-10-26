@@ -69,6 +69,15 @@ class MusicPlayer {
         this.ccEnabled = false;
         this.audioMode = 'normal';
         
+        // Web Audio API initialization
+        this.audioContext = null;
+        this.audioSource = null;
+        this.bassFilter = null;
+        this.midFilter = null;
+        this.trebleFilter = null;
+        this.gainNode = null;
+        this.analyser = null;
+        
         // Detect if running as installed PWA
         this.isInstalledPWA = this.detectInstalledPWA();
         
@@ -1235,46 +1244,112 @@ class MusicPlayer {
     }
 
     applyAudioModeEffects(mode) {
-        // Apply audio effects based on selected mode
-        if (this.audio) {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            
-            // Create nodes if needed
-            let source, analyser;
-            
+        // Initialize Web Audio API if not already done
+        if (!this.audioContext) {
             try {
-                // Different EQ settings for different modes
-                switch(mode) {
-                    case 'treble':
-                        // Boost high frequencies
-                        console.log('Treble mode activated - high frequencies boosted');
-                        break;
-                    case 'bass':
-                        // Boost low frequencies  
-                        console.log('Bass mode activated - low frequencies boosted');
-                        break;
-                    case 'earphones':
-                        // Optimized for small drivers
-                        console.log('Earphones mode activated');
-                        break;
-                    case 'tv':
-                        // Full spectrum optimized for speakers
-                        console.log('TV mode activated');
-                        break;
-                    case 'carradio':
-                        // Optimized for car environment
-                        console.log('Car Radio mode activated');
-                        break;
-                    case 'bluetooth':
-                        // Optimized for wireless speakers
-                        console.log('Bluetooth mode activated');
-                        break;
-                    default:
-                        console.log('Normal audio mode');
-                }
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {
-                console.log('Audio context mode setup:', e.message);
+                console.log('Web Audio API not supported:', e.message);
+                return;
             }
+        }
+
+        // Create audio nodes if they don't exist
+        if (!this.audioSource && this.audio) {
+            try {
+                this.audioSource = this.audioContext.createMediaElementAudioSource(this.audio);
+                
+                // Create filter nodes
+                this.bassFilter = this.audioContext.createBiquadFilter();
+                this.midFilter = this.audioContext.createBiquadFilter();
+                this.trebleFilter = this.audioContext.createBiquadFilter();
+                this.gainNode = this.audioContext.createGain();
+                this.analyser = this.audioContext.createAnalyser();
+
+                // Setup filters
+                this.bassFilter.type = 'lowshelf';
+                this.bassFilter.frequency.value = 200;
+
+                this.midFilter.type = 'peaking';
+                this.midFilter.frequency.value = 1000;
+                this.midFilter.Q.value = 0.5;
+
+                this.trebleFilter.type = 'highshelf';
+                this.trebleFilter.frequency.value = 3000;
+
+                // Connect nodes
+                this.audioSource.connect(this.bassFilter);
+                this.bassFilter.connect(this.midFilter);
+                this.midFilter.connect(this.trebleFilter);
+                this.trebleFilter.connect(this.gainNode);
+                this.gainNode.connect(this.analyser);
+                this.analyser.connect(this.audioContext.destination);
+
+                this.gainNode.gain.value = 1.0;
+            } catch (e) {
+                console.log('Error setting up audio nodes:', e.message);
+                return;
+            }
+        }
+
+        // Reset all filters
+        this.bassFilter.gain.value = 0;
+        this.midFilter.gain.value = 0;
+        this.trebleFilter.gain.value = 0;
+
+        // Apply EQ for different modes
+        switch(mode) {
+            case 'treble':
+                // Boost treble (high frequencies)
+                this.trebleFilter.gain.value = 12;
+                this.midFilter.gain.value = 3;
+                this.bassFilter.gain.value = -8;
+                console.log('🎸 Treble mode - high frequencies boosted');
+                break;
+            case 'bass':
+                // Boost bass (low frequencies)
+                this.bassFilter.gain.value = 15;
+                this.midFilter.gain.value = -2;
+                this.trebleFilter.gain.value = -6;
+                console.log('🥁 Bass mode - low frequencies boosted');
+                break;
+            case 'earphones':
+                // Balanced for small drivers
+                this.bassFilter.gain.value = 5;
+                this.midFilter.gain.value = 3;
+                this.trebleFilter.gain.value = 4;
+                console.log('🎧 Earphones mode - optimized for earbuds');
+                break;
+            case 'tv':
+                // Full spectrum for speaker systems
+                this.bassFilter.gain.value = 3;
+                this.midFilter.gain.value = 2;
+                this.trebleFilter.gain.value = 2;
+                console.log('📺 TV mode - optimized for speakers');
+                break;
+            case 'carradio':
+                // Compressed, punchy sound for car
+                this.bassFilter.gain.value = 8;
+                this.midFilter.gain.value = 6;
+                this.trebleFilter.gain.value = 3;
+                this.gainNode.gain.value = 0.85;
+                console.log('🚗 Car Radio mode - optimized for car audio');
+                break;
+            case 'bluetooth':
+                // Wireless speaker optimization
+                this.bassFilter.gain.value = 2;
+                this.midFilter.gain.value = 4;
+                this.trebleFilter.gain.value = 6;
+                console.log('🔵 Bluetooth mode - optimized for wireless speakers');
+                break;
+            default:
+                // Normal/flat response
+                this.gainNode.gain.value = 1.0;
+                console.log('Normal audio mode - flat response');
+        }
+
+        if (mode !== 'carradio') {
+            this.gainNode.gain.value = 1.0;
         }
     }
 
