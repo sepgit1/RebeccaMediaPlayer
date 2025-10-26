@@ -1805,13 +1805,14 @@ body::after {
 }
 
 .color-options {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
 }
 
 .color-btn {
-    aspect-ratio: 1;
+    width: 45px;
+    height: 45px;
     border: 3px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     cursor: pointer;
@@ -1819,7 +1820,7 @@ body::after {
 }
 
 .color-btn:hover {
-    transform: scale(1.05);
+    transform: scale(1.08);
     border-color: rgba(255, 255, 255, 0.5);
 }
 
@@ -2036,40 +2037,22 @@ body.light-theme .empty-state p {
 }
 
 /* Color Scheme Variables */
-body.pink-theme {
-    --primary-color: #ff1493;
-    --secondary-color: #ff69b4;
-    --tertiary-color: #da70d6;
-}
-
-body.purple-theme {
-    --primary-color: #8b00ff;
-    --secondary-color: #d946ef;
-    --tertiary-color: #c77dff;
-}
-
-body.blue-theme {
-    --primary-color: #800000;
+body.maroon-theme {
+    --primary-color: #c41e3a;
     --secondary-color: #8b0000;
     --tertiary-color: #a52a2a;
 }
 
-body.green-theme {
-    --primary-color: #00b894;
-    --secondary-color: #55efc4;
+body.cyan-theme {
+    --primary-color: #00d4ff;
+    --secondary-color: #0066ff;
+    --tertiary-color: #00b8d4;
+}
+
+body.forest-theme {
+    --primary-color: #228b22;
+    --secondary-color: #00b894;
     --tertiary-color: #2dcb71;
-}
-
-body.orange-theme {
-    --primary-color: #ff7f50;
-    --secondary-color: #ffa500;
-    --tertiary-color: #ff9800;
-}
-
-body.red-theme {
-    --primary-color: #ff0000;
-    --secondary-color: #ff4444;
-    --tertiary-color: #ff2222;
 }
 
 /* Admin Panel Styles */
