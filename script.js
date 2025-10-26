@@ -75,6 +75,11 @@ class MusicPlayer {
         this.audio.addEventListener('timeupdate', () => {});
         this.audio.addEventListener('ended', () => this.nextSong());
         this.audio.addEventListener('error', (e) => this.handleAudioError(e));
+        
+        // Video events for time display
+        this.video.addEventListener('loadedmetadata', () => this.updateVideoTimeDisplay());
+        this.video.addEventListener('timeupdate', () => this.updateVideoTimeDisplay());
+        this.video.addEventListener('ended', () => this.nextSong());
 
         // Control events
         this.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
@@ -478,6 +483,26 @@ class MusicPlayer {
         fullscreenVideo.play().catch(() => {});
         
         this.showNotification('📺 Fullscreen mode - Click ✕ to exit');
+    }
+
+    updateVideoTimeDisplay() {
+        const currentTimeEl = document.getElementById('videoCurrentTime');
+        const durationEl = document.getElementById('videoDuration');
+        
+        if (currentTimeEl && durationEl) {
+            const current = this.formatTime(this.video.currentTime);
+            const duration = this.formatTime(this.video.duration);
+            currentTimeEl.textContent = current;
+            durationEl.textContent = duration;
+        }
+    }
+
+    formatTime(seconds) {
+        if (isNaN(seconds)) return '0:00';
+        
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
     isAdmin() {
