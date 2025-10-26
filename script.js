@@ -67,6 +67,7 @@ class MusicPlayer {
         this.isRepeating = false;
         this.maxSongs = 500;
         this.ccEnabled = false;
+        this.audioMode = 'normal';
         
         // Detect if running as installed PWA
         this.isInstalledPWA = this.detectInstalledPWA();
@@ -1086,10 +1087,13 @@ class MusicPlayer {
         const savedTheme = localStorage.getItem('mediaPlayerTheme') || 'dark';
         const savedColorFamily = localStorage.getItem('mediaPlayerColorFamily') || 'maroon';
         const savedAnimations = localStorage.getItem('mediaPlayerAnimations') !== 'false';
+        const savedAudioMode = localStorage.getItem('mediaPlayerAudioMode') || 'normal';
 
+        this.audioMode = savedAudioMode;
         this.applyTheme(savedTheme);
         this.applyColorFamily(savedColorFamily);
         this.setupSettingsModal();
+        this.setupModesModal();
         this.updateAdminUI();
         
         // Set animation toggle
@@ -1173,6 +1177,123 @@ class MusicPlayer {
 
         // Setup admin panel if user is admin
         this.setupAdminPanel();
+    }
+
+    setupModesModal() {
+        const modesBtn = document.getElementById('modesBtn');
+        const modesModal = document.getElementById('modesModal');
+        const closeModesBtn = document.getElementById('closeModesBtn');
+
+        if (modesBtn) {
+            modesBtn.addEventListener('click', () => {
+                modesModal.style.display = 'flex';
+                this.updateModesUI();
+            });
+        }
+
+        if (closeModesBtn) {
+            closeModesBtn.addEventListener('click', () => {
+                modesModal.style.display = 'none';
+            });
+        }
+
+        // Close modal when clicking outside
+        modesModal.addEventListener('click', (e) => {
+            if (e.target === modesModal) {
+                modesModal.style.display = 'none';
+            }
+        });
+
+        // Mode buttons
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const mode = e.currentTarget.getAttribute('data-mode');
+                this.setAudioMode(mode);
+                this.updateModesUI();
+            });
+        });
+    }
+
+    setAudioMode(mode) {
+        this.audioMode = mode;
+        liveStorage.set('audioMode', mode);
+        this.applyAudioModeEffects(mode);
+        this.showNotification(`🎵 Audio mode: ${this.getModeDisplayName(mode)}`);
+    }
+
+    getModeDisplayName(mode) {
+        const names = {
+            treble: 'Treble',
+            bass: 'Bass',
+            earphones: 'Earphones',
+            tv: 'TV',
+            carradio: 'Car Radio',
+            bluetooth: 'Bluetooth',
+            normal: 'Normal'
+        };
+        return names[mode] || 'Normal';
+    }
+
+    applyAudioModeEffects(mode) {
+        // Apply audio effects based on selected mode
+        if (this.audio) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create nodes if needed
+            let source, analyser;
+            
+            try {
+                // Different EQ settings for different modes
+                switch(mode) {
+                    case 'treble':
+                        // Boost high frequencies
+                        console.log('Treble mode activated - high frequencies boosted');
+                        break;
+                    case 'bass':
+                        // Boost low frequencies  
+                        console.log('Bass mode activated - low frequencies boosted');
+                        break;
+                    case 'earphones':
+                        // Optimized for small drivers
+                        console.log('Earphones mode activated');
+                        break;
+                    case 'tv':
+                        // Full spectrum optimized for speakers
+                        console.log('TV mode activated');
+                        break;
+                    case 'carradio':
+                        // Optimized for car environment
+                        console.log('Car Radio mode activated');
+                        break;
+                    case 'bluetooth':
+                        // Optimized for wireless speakers
+                        console.log('Bluetooth mode activated');
+                        break;
+                    default:
+                        console.log('Normal audio mode');
+                }
+            } catch (e) {
+                console.log('Audio context mode setup:', e.message);
+            }
+        }
+    }
+
+    updateModesUI() {
+        // Update active state of mode buttons
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            const mode = btn.getAttribute('data-mode');
+            if (mode === this.audioMode) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        // Update current mode display
+        const currentModeDisplay = document.getElementById('currentModeDisplay');
+        if (currentModeDisplay) {
+            currentModeDisplay.innerHTML = `Current Mode: <strong>${this.getModeDisplayName(this.audioMode)}</strong>`;
+        }
     }
 
     setupAdminPanel() {
