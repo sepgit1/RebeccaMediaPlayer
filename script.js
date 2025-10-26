@@ -1870,35 +1870,14 @@ class MusicPlayer {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         
-        // Get current palette colors
-        const palette = this.colorPalettes[this.currentColorFamily];
-        const colors = [
-            palette.dark,
-            palette.medium,
-            palette.light,
-            palette.accent
-        ];
+        // Simplified gradient background
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, 'rgba(45, 26, 45, 0.1)');
+        gradient.addColorStop(0.5, 'rgba(255, 20, 147, 0.05)');
+        gradient.addColorStop(1, 'rgba(45, 26, 45, 0.1)');
         
-        // Draw triangle utility
-        const drawTriangle = (x, y, size, rotation, color) => {
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.rotate(rotation);
-            ctx.beginPath();
-            ctx.moveTo(0, -size);
-            ctx.lineTo(size, size);
-            ctx.lineTo(-size, size);
-            ctx.closePath();
-            ctx.fillStyle = color;
-            ctx.fill();
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-            ctx.restore();
-        };
-        
-        // Shape class with triangles and lines
-        class Shape {
+        // Simple floating circles
+        class Circle {
             constructor() {
                 this.reset();
             }
@@ -1906,63 +1885,35 @@ class MusicPlayer {
             reset() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = 2 + Math.random() * 60;
-                this.color = colors[Math.floor(Math.random() * colors.length)];
-                this.rotation = Math.random() * Math.PI * 2;
-                this.vx = (Math.random() - 0.5) * 1.5;
-                this.vy = (Math.random() - 0.5) * 1.5;
-                this.lineLength = 20 + Math.random() * 100;
-                this.opacity = 0.05 + Math.random() * 0.15;
-                this.rotationSpeed = (Math.random() - 0.5) * 0.1;
-                this.lineCount = 1 + Math.floor(Math.random() * 5);
+                this.size = 1 + Math.random() * 3;
+                this.speed = 0.2 + Math.random() * 0.3;
+                this.opacity = 0.1 + Math.random() * 0.1;
             }
             
             update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                this.rotation += this.rotationSpeed;
-                
-                // Draw connecting lines to random nearby points
-                for (let i = 0; i < this.lineCount; i++) {
-                    const angle = (Math.PI * 2 / this.lineCount) * i + (Math.random() - 0.5) * 0.5;
-                    const lineEndX = this.x + Math.cos(angle) * this.lineLength;
-                    const lineEndY = this.y + Math.sin(angle) * this.lineLength;
-                    
-                    ctx.beginPath();
-                    ctx.moveTo(this.x, this.y);
-                    ctx.lineTo(lineEndX, lineEndY);
-                    ctx.strokeStyle = this.color;
-                    ctx.globalAlpha = this.opacity * 0.5;
-                    ctx.lineWidth = 0.5 + Math.random() * 2;
-                    ctx.stroke();
+                this.y -= this.speed;
+                if (this.y < -this.size * 2) {
+                    this.y = canvas.height + this.size * 2;
+                    this.x = Math.random() * canvas.width;
                 }
-                
-                // Draw triangle
-                ctx.globalAlpha = this.opacity;
-                drawTriangle(this.x, this.y, this.size, this.rotation, this.color);
-                ctx.globalAlpha = 1;
-                
-                // Reset if out of bounds
-                if (this.x < -this.size * 2 || this.x > canvas.width + this.size * 2 ||
-                    this.y < -this.size * 2 || this.y > canvas.height + this.size * 2) {
-                    this.reset();
-                }
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.fill();
             }
         }
         
-        const shapes = [];
-        this.shapes = shapes;  // Store shapes reference for color updates
-        const SHAPE_COUNT = 6;
-        for (let i = 0; i < SHAPE_COUNT; i++) {
-            shapes.push(new Shape());
-        }
+        const circles = Array(15).fill().map(() => new Circle());
         
-        // Animation loop
+        // Simple animation loop
         const animate = () => {
-            // Semi-transparent clear for trail effect
-            ctx.fillStyle = 'rgba(45, 26, 45, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);            shapes.forEach(shape => {
-                shape.update();
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);            circles.forEach(circle => {
+                circle.update();
+                circle.draw();
             });
             
             requestAnimationFrame(animate);
