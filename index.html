@@ -59,6 +59,7 @@
                     <span id="songCount">0</span> / 500 items
                 </div>
                 <button id="installAppBtn" class="install-app-btn" title="Install App" style="display: none;">⬇️ Install</button>
+                <button id="modesBtn" class="modes-btn" title="Audio Modes">🎵</button>
                 <button id="settingsBtn" class="settings-btn" title="Settings">⚙️</button>
             </div>
         </header>
@@ -252,6 +253,50 @@
                     <label>�🔄 App Version</label>
                     <p class="version-info">v1.0.0 - Updated 2025-10-26</p>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Modes Modal -->
+    <div id="modesModal" class="settings-modal" style="display: none;">
+        <div class="settings-modal-content">
+            <div class="settings-header">
+                <h2>🎵 Audio Modes</h2>
+                <button id="closeModesBtn" class="close-btn">✕</button>
+            </div>
+            
+            <div class="settings-section">
+                <label>Select Audio Mode</label>
+                <div class="modes-grid">
+                    <button class="mode-btn" data-mode="treble" title="Treble - Enhanced high frequencies">
+                        <span class="mode-icon">🎸</span>
+                        <span class="mode-name">Treble</span>
+                    </button>
+                    <button class="mode-btn" data-mode="bass" title="Bass - Enhanced low frequencies">
+                        <span class="mode-icon">🥁</span>
+                        <span class="mode-name">Bass</span>
+                    </button>
+                    <button class="mode-btn" data-mode="earphones" title="Earphones - Optimized for earbuds">
+                        <span class="mode-icon">🎧</span>
+                        <span class="mode-name">Earphones</span>
+                    </button>
+                    <button class="mode-btn" data-mode="tv" title="TV - Optimized for speakers">
+                        <span class="mode-icon">📺</span>
+                        <span class="mode-name">TV</span>
+                    </button>
+                    <button class="mode-btn" data-mode="carradio" title="Car Radio - Optimized for car audio">
+                        <span class="mode-icon">🚗</span>
+                        <span class="mode-name">Car Radio</span>
+                    </button>
+                    <button class="mode-btn" data-mode="bluetooth" title="Bluetooth - Optimized for wireless speakers">
+                        <span class="mode-icon">🔵</span>
+                        <span class="mode-name">Bluetooth</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <p id="currentModeDisplay" class="current-mode-text">Current Mode: <strong>Normal</strong></p>
             </div>
         </div>
     </div>
