@@ -1,10 +1,10 @@
 {
   "name": "Rebecca Media Player",
   "short_name": "Rebecca Player",
-  "description": "Rebecca's elegant and futuristic media player with up to 100 songs",
+  "description": "Rebecca's elegant and futuristic media player with up to 500 songs and videos",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#1a1a2e",
+  "background_color": "#2d1a2d",
   "theme_color": "#ff1493",
   "orientation": "portrait-primary",
   "scope": "./",

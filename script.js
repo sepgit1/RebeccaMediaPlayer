@@ -524,7 +524,16 @@ class MusicPlayer {
 
     handleAudioError(event) {
         console.error('Audio error:', event);
-        this.showNotification('Error loading this song. Please try another one.');
+        const errorMessages = {
+            1: 'Audio loading was aborted',
+            2: 'Network error occurred',
+            3: 'Audio decoding failed',
+            4: 'Audio format not supported'
+        };
+        const errorCode = event.target.error?.code || 'Unknown';
+        const message = errorMessages[errorCode] || 'Error loading this song. Please try another one.';
+        this.showNotification('⚠️ ' + message);
+        this.nextSong(); // Auto-skip to next song
     }
 
     showNotification(message) {
