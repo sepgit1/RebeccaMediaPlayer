@@ -650,20 +650,25 @@ class MusicPlayer {
         const dismissBtn = document.getElementById('dismissBtn');
         const iosGuide = document.getElementById('iosInstallGuide');
         const closeIosGuide = document.getElementById('closeIosGuide');
+        const installAppBtn = document.getElementById('installAppBtn');
 
         // Detect if iOS/Safari
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+        const isStandalone = window.navigator.standalone === true;
+
+        console.log('PWA Detection:', { isIOS, isSafari, isStandalone });
 
         // Listen for the beforeinstallprompt event (Chrome, Edge, Firefox Android)
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            console.log('Install prompt available - showing banner');
-            installPrompt.style.display = 'block';
+            console.log('✓ Install prompt available - showing both banner and button');
+            if (installPrompt) installPrompt.style.display = 'block';
+            if (installAppBtn) installAppBtn.style.display = 'flex';
         });
 
-        // Handle install button click
+        // Handle main install button click
         if (installBtn) {
             installBtn.addEventListener('click', async () => {
                 if (deferredPrompt) {
@@ -673,7 +678,22 @@ class MusicPlayer {
                         this.showNotification('✨ Rebecca Media Player installed successfully!');
                     }
                     deferredPrompt = null;
-                    installPrompt.style.display = 'none';
+                    if (installPrompt) installPrompt.style.display = 'none';
+                }
+            });
+        }
+
+        // Handle header install button click
+        if (installAppBtn) {
+            installAppBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        this.showNotification('✨ App installed successfully!');
+                    }
+                    deferredPrompt = null;
+                    installAppBtn.style.display = 'none';
                 }
             });
         }
@@ -681,17 +701,17 @@ class MusicPlayer {
         // Handle dismiss button click
         if (dismissBtn) {
             dismissBtn.addEventListener('click', () => {
-                installPrompt.style.display = 'none';
+                if (installPrompt) installPrompt.style.display = 'none';
             });
         }
 
-        // Show iOS install guide if on Safari/iOS
-        if (isIOS && isSafari && iosGuide) {
+        // Show iOS install guide if on Safari/iOS and NOT already installed
+        if (isIOS && isSafari && !isStandalone && iosGuide) {
             // Show after a short delay
             setTimeout(() => {
                 iosGuide.style.display = 'block';
-                console.log('Showing iOS install guide');
-            }, 1000);
+                console.log('✓ Showing iOS install guide');
+            }, 800);
         }
 
         // Handle iOS guide close
@@ -710,16 +730,18 @@ class MusicPlayer {
                     console.log('✓ Service Worker registered successfully');
                 })
                 .catch(error => {
-                    console.log('Service Worker registration note:', error);
+                    console.log('Service Worker note:', error);
                 });
         }
 
         // Log PWA support info
-        console.log('PWA Support:', {
+        console.log('PWA Support Summary:', {
             isIOS,
             isSafari,
+            isStandalone,
             hasBeforeInstallPrompt: 'onbeforeinstallprompt' in window,
-            isSecure: window.location.protocol === 'https:'
+            isSecure: window.location.protocol === 'https:',
+            serviceWorkerSupported: 'serviceWorker' in navigator
         });
     }
 
