@@ -81,6 +81,17 @@ class MusicPlayer {
         this.searchInput.addEventListener('input', () => this.filterPlaylist());
         this.sortSelect.addEventListener('change', () => this.sortPlaylist());
         
+        // Video controls
+        const expandVideoBtn = document.getElementById('expandVideoBtn');
+        const minimizeVideoBtn = document.getElementById('minimizeVideoBtn');
+        
+        if (expandVideoBtn) {
+            expandVideoBtn.addEventListener('click', () => this.expandVideo());
+        }
+        if (minimizeVideoBtn) {
+            minimizeVideoBtn.addEventListener('click', () => this.minimizeVideo());
+        }
+        
         // Closed Captions and Comments
         const ccBtn = document.getElementById('ccBtn');
         const closeCcBtn = document.getElementById('closeCcBtn');
@@ -362,6 +373,57 @@ class MusicPlayer {
                     this.showNotification('Error playing this song. It might be corrupted.');
                 });
             }
+        }
+    }
+
+    expandVideo() {
+        const videoContainer = document.getElementById('videoContainer');
+        const video = document.getElementById('videoPlayer');
+        
+        // Create fullscreen overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'video-fullscreen-overlay';
+        overlay.id = 'videoFullscreenOverlay';
+        
+        // Clone the video element
+        const videoClone = video.cloneNode(true);
+        overlay.appendChild(videoClone);
+        
+        // Create close button
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'video-fullscreen-close';
+        closeBtn.textContent = '✕';
+        closeBtn.addEventListener('click', () => this.minimizeVideo());
+        overlay.appendChild(closeBtn);
+        
+        document.body.appendChild(overlay);
+        
+        // Pause original and play clone
+        video.pause();
+        videoClone.play().catch(err => console.log('Fullscreen playback note:', err));
+        videoClone.currentTime = video.currentTime;
+        
+        // Sync time between videos
+        videoClone.addEventListener('timeupdate', () => {
+            video.currentTime = videoClone.currentTime;
+        });
+        
+        this.showNotification('📺 Fullscreen video mode');
+    }
+
+    minimizeVideo() {
+        const overlay = document.getElementById('videoFullscreenOverlay');
+        const video = document.getElementById('videoPlayer');
+        const overlayVideo = overlay?.querySelector('video');
+        
+        if (overlayVideo && video) {
+            // Keep video playing, sync time
+            video.currentTime = overlayVideo.currentTime;
+            video.play().catch(err => console.log('Playback note:', err));
+        }
+        
+        if (overlay) {
+            overlay.remove();
         }
     }
 
