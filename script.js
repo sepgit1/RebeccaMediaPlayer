@@ -92,33 +92,34 @@ class MusicPlayer {
         this.searchInput.addEventListener('input', () => this.filterPlaylist());
         this.sortSelect.addEventListener('change', () => this.sortPlaylist());
         
-        // Video controls
-        const expandVideoBtn = document.getElementById('expandVideoBtn');
+        // Video controls - DISABLE FULLSCREEN
         const minimizeVideoBtn = document.getElementById('minimizeVideoBtn');
         
-        if (expandVideoBtn) {
-            expandVideoBtn.addEventListener('click', () => this.expandVideo());
-        }
         if (minimizeVideoBtn) {
             minimizeVideoBtn.addEventListener('click', () => {
-                // Check if we're in fullscreen overlay
-                const overlay = document.getElementById('videoFullscreenOverlay');
-                if (overlay) {
-                    this.minimizeVideo(); // Exit fullscreen mode
-                } else {
-                    // Close the video container but keep playing
-                    const video = document.getElementById('videoPlayer');
-                    if (video) {
-                        video.pause();
-                        this.videoContainer.style.display = 'none';
-                        // Continue playing on audio player (in case user wants audio only)
-                        if (this.isPlaying && !this.audio.src) {
-                            // If no audio was set, user was watching video, keep it paused
-                        }
-                    }
-                }
+                this.video.pause();
+                this.videoContainer.style.display = 'none';
             });
         }
+        
+        // Block fullscreen attempts on video element
+        this.video.addEventListener('fullscreenchange', (e) => {
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch(() => {});
+            }
+        });
+        
+        this.video.addEventListener('webkitfullscreenchange', (e) => {
+            if (document.webkitFullscreenElement) {
+                document.webkitExitFullscreen?.();
+            }
+        });
+        
+        this.video.addEventListener('mozfullscreenchange', (e) => {
+            if (document.mozFullScreen) {
+                document.mozCancelFullScreen?.();
+            }
+        });
         
         // Closed Captions and Comments
         const ccBtn = document.getElementById('ccBtn');
@@ -380,25 +381,31 @@ class MusicPlayer {
                 this.video.src = song.url;
                 this.video.load();
                 
-                // CRITICAL: Disable ALL fullscreen functionality
+                // CRITICAL: Strip all fullscreen capabilities
                 this.video.removeAttribute('allowfullscreen');
                 this.video.removeAttribute('webkitallowfullscreen');
                 this.video.removeAttribute('mozallowfullscreen');
+                this.video.removeAttribute('msallowfullscreen');
+                this.video.removeAttribute('oallowfullscreen');
+                
+                // Prevent any fullscreen requests
                 this.video.setAttribute('controlsList', 'nofullscreen');
                 
-                // If running as installed PWA, add extra safeguards
-                if (this.isInstalledPWA) {
-                    // Prevent double-click from triggering fullscreen
-                    this.video.style.pointerEvents = 'none';
-                    this.videoContainer.style.pointerEvents = 'auto';
-                    
-                    // Prevent any fullscreen attempts through API
-                    this.video.addEventListener('fullscreenchange', (e) => {
-                        if (document.fullscreenElement) {
-                            document.exitFullscreen().catch(() => {});
-                        }
-                    });
-                }
+                // Disable all interaction methods that could trigger fullscreen
+                this.video.style.touchAction = 'none';
+                this.video.ondblclick = (e) => e.preventDefault();
+                this.video.onmouseenter = () => {
+                    // Remove any context menu that might allow fullscreen
+                    this.video.oncontextmenu = (e) => e.preventDefault();
+                };
+                
+                // Prevent keyboard shortcuts for fullscreen
+                this.video.addEventListener('keydown', (e) => {
+                    if (e.key === 'f' || e.key === 'F') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                });
                 
                 this.video.play().then(() => {
                     this.isPlaying = true;
@@ -408,14 +415,6 @@ class MusicPlayer {
                     console.error('Error playing video:', error);
                     this.showNotification('Error playing this video. It might be corrupted.');
                 });
-                
-                // Prevent wheel/double-click interactions on video
-                this.video.onwheel = (e) => {
-                    e.preventDefault();
-                };
-                this.video.ondblclick = (e) => {
-                    e.preventDefault();
-                };
             } else {
                 this.videoContainer.style.display = 'none';
                 this.mediaIcon.textContent = '🎵';
@@ -429,64 +428,6 @@ class MusicPlayer {
                     console.error('Error playing song:', error);
                     this.showNotification('Error playing this song. It might be corrupted.');
                 });
-            }
-        }
-    }
-
-    expandVideo() {
-        const videoContainer = document.getElementById('videoContainer');
-        const video = document.getElementById('videoPlayer');
-        
-        // Create fullscreen overlay
-        const overlay = document.createElement('div');
-        overlay.className = 'video-fullscreen-overlay';
-        overlay.id = 'videoFullscreenOverlay';
-        
-        // Clone the video element
-        const videoClone = video.cloneNode(true);
-        overlay.appendChild(videoClone);
-        
-        // Create close button
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'video-fullscreen-close';
-        closeBtn.textContent = '✕';
-        closeBtn.addEventListener('click', () => this.minimizeVideo());
-        overlay.appendChild(closeBtn);
-        
-        document.body.appendChild(overlay);
-        
-        // Pause original and play clone
-        video.pause();
-        videoClone.play().catch(err => console.log('Fullscreen playback note:', err));
-        videoClone.currentTime = video.currentTime;
-        
-        // Sync time between videos
-        videoClone.addEventListener('timeupdate', () => {
-            video.currentTime = videoClone.currentTime;
-        });
-        
-        this.showNotification('📺 Fullscreen video mode');
-    }
-
-    minimizeVideo() {
-        const overlay = document.getElementById('videoFullscreenOverlay');
-        const video = document.getElementById('videoPlayer');
-        const overlayVideo = overlay?.querySelector('video');
-        
-        if (overlayVideo && video) {
-            // Keep video playing, sync time
-            video.currentTime = overlayVideo.currentTime;
-            video.play().catch(err => console.log('Playback note:', err));
-        }
-        
-        if (overlay) {
-            overlay.remove();
-        }
-        
-        // Make sure to keep audio playing (continue playback of current song)
-        if (this.isPlaying) {
-            if (video.paused && video.src) {
-                video.play().catch(err => console.log('Playback note:', err));
             }
         }
     }
