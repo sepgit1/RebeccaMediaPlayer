@@ -26,11 +26,19 @@ class MusicPlayer {
     }
 
     detectInstalledPWA() {
-        // Check if app is running as installed PWA
+        // Check if app is running as installed PWA or Web Clip on iOS
         return window.matchMedia('(display-mode: standalone)').matches ||
                window.matchMedia('(display-mode: fullscreen)').matches ||
                window.matchMedia('(display-mode: minimal-ui)').matches ||
                navigator.standalone === true;
+    }
+
+    isIOSWebClip() {
+        // Detect if running as iOS Web Clip (installed to home screen)
+        return navigator.standalone === true || 
+               (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) &&
+               !navigator.userAgent.includes('CriOS') && 
+               !navigator.userAgent.includes('Chrome');
     }
 
     initializeElements() {
@@ -386,6 +394,14 @@ class MusicPlayer {
                 this.video.src = song.url;
                 this.video.load();
                 
+                // iOS Safari fullscreen prevention - CRITICAL
+                if (this.isIOSWebClip()) {
+                    this.video.setAttribute('playsinline', 'playsinline');
+                    this.video.setAttribute('webkit-playsinline', 'webkit-playsinline');
+                    this.video.style.maxHeight = '280px';
+                    this.video.style.maxWidth = '100%';
+                }
+                
                 this.video.play().then(() => {
                     this.isPlaying = true;
                     this.updatePlayButton();
@@ -426,6 +442,10 @@ class MusicPlayer {
         fullscreenVideo.className = 'video-fullscreen-player';
         fullscreenVideo.src = this.video.src;
         fullscreenVideo.currentTime = this.video.currentTime;
+        
+        // iOS inline playback attributes
+        fullscreenVideo.setAttribute('playsinline', 'playsinline');
+        fullscreenVideo.setAttribute('webkit-playsinline', 'webkit-playsinline');
         
         // Create close button
         const closeBtn = document.createElement('button');
