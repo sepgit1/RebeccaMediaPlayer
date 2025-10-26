@@ -23,6 +23,9 @@ class MusicPlayer {
         
         // PWA install prompt
         this.initializePWA();
+        
+        // Initialize dynamic shapes animation
+        this.initializeDynamicShapes();
     }
 
     detectInstalledPWA() {
@@ -1468,6 +1471,106 @@ class MusicPlayer {
             syncDownloadBtn.disabled = true;
             syncLogoutBtn.disabled = true;
         }
+    }
+
+    initializeDynamicShapes() {
+        const canvas = document.getElementById('dynamicShapesCanvas');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // Color palette matching maroon/purple theme
+        const colors = [
+            'rgba(255, 20, 147, 0.3)',    // Deep pink
+            'rgba(138, 43, 226, 0.3)',    // Maroon-purple
+            'rgba(255, 105, 180, 0.3)',   // Hot pink
+            'rgba(128, 0, 0, 0.3)',       // Maroon
+            'rgba(199, 21, 133, 0.3)'     // Medium violet red
+        ];
+        
+        // Create particles
+        const particles = [];
+        const particleCount = 15;
+        
+        for (let i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                radius: Math.random() * 80 + 30,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                shapeType: Math.floor(Math.random() * 3) // 0: circle, 1: square, 2: triangle
+            });
+        }
+        
+        const animate = () => {
+            // Clear with semi-transparent background for trail effect
+            ctx.fillStyle = 'rgba(45, 26, 45, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Update and draw particles
+            particles.forEach((particle, index) => {
+                // Update position
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                
+                // Bounce off walls
+                if (particle.x - particle.radius < 0 || particle.x + particle.radius > canvas.width) {
+                    particle.vx *= -1;
+                    particle.x = Math.max(particle.radius, Math.min(canvas.width - particle.radius, particle.x));
+                }
+                if (particle.y - particle.radius < 0 || particle.y + particle.radius > canvas.height) {
+                    particle.vy *= -1;
+                    particle.y = Math.max(particle.radius, Math.min(canvas.height - particle.radius, particle.y));
+                }
+                
+                // Slowly rotate color
+                const hueShift = (index + Date.now() / 100) % colors.length;
+                
+                // Draw shape
+                ctx.fillStyle = particle.color;
+                ctx.globalAlpha = 0.4 + Math.sin(Date.now() / 2000 + index) * 0.2;
+                
+                ctx.save();
+                ctx.translate(particle.x, particle.y);
+                
+                if (particle.shapeType === 0) {
+                    // Circle
+                    ctx.beginPath();
+                    ctx.arc(0, 0, particle.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (particle.shapeType === 1) {
+                    // Square with rotation
+                    ctx.rotate((Date.now() / 5000 + index) % (Math.PI * 2));
+                    ctx.fillRect(-particle.radius / 2, -particle.radius / 2, particle.radius, particle.radius);
+                } else {
+                    // Triangle with rotation
+                    ctx.rotate((Date.now() / 5000 + index) % (Math.PI * 2));
+                    ctx.beginPath();
+                    ctx.moveTo(0, -particle.radius);
+                    ctx.lineTo(particle.radius, particle.radius);
+                    ctx.lineTo(-particle.radius, particle.radius);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                
+                ctx.restore();
+            });
+            
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(animate);
+        };
+        
+        animate();
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
     }
 }
 
