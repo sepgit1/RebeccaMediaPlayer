@@ -1186,7 +1186,7 @@ body::after {
 
 .close-btn:hover {
     transform: rotate(90deg);
-    color: #ff1493;
+    color: var(--primary-color, #ff1493);
 }
 
 .settings-section {
@@ -1197,7 +1197,7 @@ body::after {
     display: block;
     font-size: 1rem;
     margin-bottom: 12px;
-    color: #ffffff;
+    color: var(--light-text);
     font-weight: 500;
 }
 
@@ -1209,9 +1209,9 @@ body::after {
 .theme-btn {
     flex: 1;
     padding: 12px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid var(--border-color);
     background: rgba(255, 255, 255, 0.05);
-    color: #ffffff;
+    color: var(--light-text);
     border-radius: 10px;
     cursor: pointer;
     font-size: 1.2rem;
@@ -1225,7 +1225,7 @@ body::after {
 }
 
 .theme-btn.active {
-    border-color: #ff1493;
+    border-color: var(--primary-color, #ff1493);
     background: rgba(255, 20, 147, 0.2);
     box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
 }
@@ -1268,7 +1268,7 @@ body::after {
     width: 40px;
     height: 24px;
     cursor: pointer;
-    accent-color: #ff1493;
+    accent-color: var(--primary-color, #ff1493);
 }
 
 .update-btn {
@@ -1278,7 +1278,7 @@ body::after {
     background: linear-gradient(135deg,
         rgba(255, 20, 147, 0.5),
         rgba(138, 43, 226, 0.4));
-    color: #ffffff;
+    color: var(--light-text);
     border: 1px solid rgba(255, 20, 147, 0.3);
     border-radius: 12px;
     font-size: 1rem;
@@ -1302,83 +1302,212 @@ body::after {
 
 /* Theme Variables */
 :root {
+    /* Primary Colors (Default: Pink) */
     --primary-color: #ff1493;
     --secondary-color: #ff69b4;
+    --tertiary-color: #da70d6;
+    
+    /* Background Colors */
     --dark-bg: #2d1a2d;
     --light-bg: #ffffff;
+    --dark-bg-secondary: #3a1f1f;
+    --light-bg-secondary: #f5f5f5;
+    
+    /* Text Colors */
     --dark-text: #000000;
+    --dark-text-secondary: rgba(0, 0, 0, 0.7);
     --light-text: #ffffff;
+    --light-text-secondary: rgba(255, 255, 255, 0.7);
+    
+    /* Overlay Colors */
+    --overlay-light: rgba(255, 255, 255, 0.1);
+    --overlay-dark: rgba(0, 0, 0, 0.3);
+    
+    /* Border Colors */
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-color-strong: rgba(255, 255, 255, 0.2);
+    
+    /* Status Colors */
+    --success-color: #00b894;
+    --error-color: #ff4444;
+    --warning-color: #ff7f50;
 }
 
 /* Light Theme */
 body.light-theme {
     background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 50%, #f0f0f0 100%);
-    color: #000000;
+    color: var(--dark-text);
+}
+
+body.light-theme::before,
+body.light-theme::after {
+    opacity: 0.3;
 }
 
 body.light-theme .container {
-    background: rgba(255, 255, 255, 0.9);
-    color: #000000;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--dark-text);
+    border-color: var(--primary-color, #ff1493);
 }
 
 body.light-theme .header {
-    color: #000000;
+    background: linear-gradient(135deg,
+        rgba(255, 105, 180, 0.08) 0%,
+        rgba(255, 20, 147, 0.05) 50%,
+        rgba(138, 43, 226, 0.08) 100%);
+    color: var(--dark-text);
+    border-bottom-color: var(--primary-color, #ff1493);
+}
+
+body.light-theme .header h1 {
+    color: var(--dark-text);
 }
 
 body.light-theme .song-counter {
-    color: #000000;
+    background: rgba(255, 20, 147, 0.1);
+    color: var(--dark-text);
+    border-color: rgba(255, 20, 147, 0.2);
+}
+
+body.light-theme .visualizer-container {
+    background: linear-gradient(180deg,
+        rgba(255, 20, 147, 0.08) 0%,
+        rgba(138, 43, 226, 0.05) 100%);
+    border-bottom-color: var(--primary-color, #ff1493);
+}
+
+body.light-theme .visualizer .bar {
+    box-shadow: 
+        0 0 15px rgba(255, 20, 147, 0.5),
+        0 0 30px rgba(255, 105, 180, 0.2);
 }
 
 body.light-theme .control-btn,
 body.light-theme .upload-btn,
 body.light-theme .clear-btn {
     background: rgba(0, 0, 0, 0.05);
-    color: #000000;
+    color: var(--dark-text);
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-body.light-theme .control-btn:hover {
-    background: rgba(255, 20, 147, 0.1);
+body.light-theme .control-btn:hover,
+body.light-theme .upload-btn:hover {
+    background: rgba(255, 20, 147, 0.15);
+    color: var(--dark-text);
 }
 
 body.light-theme .playlist-item {
     background: rgba(0, 0, 0, 0.03);
-    color: #000000;
+    color: var(--dark-text);
+    border-color: rgba(0, 0, 0, 0.1);
 }
 
 body.light-theme .playlist-item:hover {
-    background: rgba(255, 20, 147, 0.1);
+    background: rgba(255, 20, 147, 0.12);
+}
+
+body.light-theme .playlist-item.active {
+    background: rgba(255, 20, 147, 0.2);
+}
+
+body.light-theme .search-input {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--dark-text);
+}
+
+body.light-theme .search-input::placeholder {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+body.light-theme .search-input:focus {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: var(--primary-color, #ff1493);
+}
+
+body.light-theme .sort-select {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--dark-text);
+}
+
+body.light-theme .settings-modal-content {
+    background: rgba(255, 255, 255, 0.98);
+    color: var(--dark-text);
+}
+
+body.light-theme .settings-section {
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .settings-section label {
+    color: var(--dark-text);
+}
+
+body.light-theme .toggle-option {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--dark-text);
+}
+
+body.light-theme .theme-btn {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--dark-text);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .theme-btn.active {
+    border-color: var(--primary-color, #ff1493);
+    background: rgba(255, 20, 147, 0.2);
+}
+
+body.light-theme .empty-state {
+    color: var(--dark-text);
+}
+
+body.light-theme .empty-state h3 {
+    color: var(--dark-text);
+}
+
+body.light-theme .empty-state p {
+    color: var(--dark-text-secondary);
 }
 
 /* Color Scheme Variables */
 body.pink-theme {
     --primary-color: #ff1493;
     --secondary-color: #ff69b4;
+    --tertiary-color: #da70d6;
 }
 
 body.purple-theme {
     --primary-color: #8b00ff;
     --secondary-color: #d946ef;
+    --tertiary-color: #c77dff;
 }
 
 body.blue-theme {
     --primary-color: #0066ff;
     --secondary-color: #00d4ff;
+    --tertiary-color: #00c0ff;
 }
 
 body.green-theme {
     --primary-color: #00b894;
     --secondary-color: #55efc4;
+    --tertiary-color: #2dcb71;
 }
 
 body.orange-theme {
     --primary-color: #ff7f50;
     --secondary-color: #ffa500;
+    --tertiary-color: #ff9800;
 }
 
 body.red-theme {
     --primary-color: #ff0000;
     --secondary-color: #ff4444;
+    --tertiary-color: #ff2222;
 }
 
 /* Admin Panel Styles */
