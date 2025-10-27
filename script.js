@@ -60,25 +60,12 @@ const liveStorage = new LiveStorageManager();
 
 class MusicPlayer {
     constructor() {
-        const savedSongs = liveStorage.get('songs') || [];
-        this.songs = savedSongs.map(song => {
-            // Recreate object URLs for saved songs
-            if (song.file && song.url) {
-                return {
-                    ...song,
-                    url: song.url // Keep the existing URL
-                };
-            }
-            return song;
-        });
-        this.comments = liveStorage.get('comments') || {};
+        this.songs = [];
         this.currentSongIndex = 0;
         this.isPlaying = false;
         this.isShuffled = false;
         this.isRepeating = false;
         this.maxSongs = 500;
-        this.ccEnabled = false;
-        this.audioMode = 'normal';
         
         // Web Audio API initialization
         this.audioContext = null;
@@ -355,43 +342,26 @@ class MusicPlayer {
     }
 
     handleFileUpload(event) {
-        const files = Array.from(event.target.files);
-        const mediaFiles = files.filter(file => 
+        const files = Array.from(event.target.files).filter(file => 
             file.type.startsWith('audio/') || file.type.startsWith('video/')
         );
         
-        if (this.songs.length + mediaFiles.length > this.maxSongs) {
-            alert(`You can only have up to ${this.maxSongs} items. You're trying to add ${mediaFiles.length} but only have ${this.maxSongs - this.songs.length} slots available.`);
-            return;
-        }
+        if (files.length === 0) return;
 
-        mediaFiles.forEach(file => {
+        files.forEach(file => {
             const url = URL.createObjectURL(file);
-            const isVideo = file.type.startsWith('video/');
-            const song = {
-                id: Date.now() + Math.random(),
-                name: file.name.replace(/\.[^/.]+$/, ""), // Remove file extension
-                artist: isVideo ? '🎬 Video' : 'Unknown Artist',
+            this.songs.push({
+                name: file.name.replace(/\.[^/.]+$/, ""),
+                artist: file.type.startsWith('video/') ? '🎬 Video' : '🎵 Music',
                 url: url,
-                file: file,
-                isVideo: isVideo,
+                isVideo: file.type.startsWith('video/'),
                 dateAdded: new Date().toISOString()
-            };
-            
-            this.songs.push(song);
+            });
         });
 
-        this.saveToStorage();
         this.loadPlaylist();
-        this.updateSongCounter();
-        this.checkEmptyState();
-        
-        // Clear file input
+        this.playSong(this.songs.length - 1); // Play the last added song
         this.fileInput.value = '';
-        
-        if (mediaFiles.length > 0) {
-            this.showNotification(`Added ${mediaFiles.length} song(s) to your playlist!`);
-        }
     }
 
     saveToStorage() {
@@ -447,73 +417,29 @@ class MusicPlayer {
         fetch('videos/manifest.json')
             .then(response => response.json())
             .then(videos => {
-                // Get the current manifest version
-                const currentManifestVersion = localStorage.getItem('manifestVersion') || '1.0';
-                const newManifestVersion = '2.0'; // Updated when playlist changes
+                // Convert videos to the format expected by the app
+                const formattedVideos = videos.map(video => ({
+                    name: video.title,
+                    artist: video.artist,
+                    url: video.path,
+                    isVideo: true,
+                    dateAdded: video.dateAdded,
+                    duration: 0
+                }));
                 
-                // If manifest has been updated, reload all videos in new order
-                if (currentManifestVersion !== newManifestVersion) {
-                    console.log('Manifest updated - reloading all videos in new order');
-                    
-                    // Remove any old videos from songs
-                    this.songs = this.songs.filter(song => !song.isVideo);
-                    
-                    // Add all videos from manifest in the correct order
-                    const formattedVideos = videos.map(video => ({
-                        name: video.title,
-                        artist: video.artist,
-                        url: video.path,
-                        isVideo: true,
-                        dateAdded: video.dateAdded,
-                        duration: 0
-                    }));
-                    
-                    // Add videos at the beginning (top of list)
-                    this.songs = [...formattedVideos, ...this.songs];
-                    localStorage.setItem('musicPlayerSongs', JSON.stringify(this.songs));
-                    localStorage.setItem('manifestVersion', newManifestVersion);
-                    
-                    this.loadPlaylist();
-                    this.updateSongCounter();
-                    this.checkEmptyState();
-                    
-                    this.showNotification(`✨ Playlist updated with ${videos.length} songs!`);
-                } else {
-                    // Check if videos already exist in localStorage
-                    const videoTitles = videos.map(v => v.title);
-                    const existingTitles = this.songs.map(s => s.name);
-                    
-                    // Add only videos that don't already exist
-                    const newVideos = videos.filter(video => 
-                        !existingTitles.includes(video.title)
-                    );
-                    
-                    if (newVideos.length > 0) {
-                        // Convert to the format expected by the app
-                        const formattedVideos = newVideos.map(video => ({
-                            name: video.title,
-                            artist: video.artist,
-                            url: video.path,
-                            isVideo: true,
-                            dateAdded: video.dateAdded,
-                            duration: 0
-                        }));
-                        
-                        // Add to playlist
-                        this.songs = [...this.songs, ...formattedVideos];
-                        localStorage.setItem('musicPlayerSongs', JSON.stringify(this.songs));
-                        
-                        // Refresh the display
-                        this.loadPlaylist();
-                        this.updateSongCounter();
-                        this.checkEmptyState();
-                        
-                        this.showNotification(`✨ Added ${newVideos.length} new songs!`);
-                    }
-                }
+                // Add to playlist
+                this.songs = [...formattedVideos];
+                this.saveToStorage();
+                
+                // Refresh the display
+                this.loadPlaylist();
+                this.updateSongCounter();
+                this.checkEmptyState();
+                
+                this.showNotification(`✨ Loaded ${videos.length} songs!`);
             })
             .catch(error => {
-                console.log('Videos not loaded (this is normal if not deployed yet):', error);
+                console.error('Error loading videos:', error);
             });
     }
 
@@ -527,53 +453,33 @@ class MusicPlayer {
         if (index >= 0 && index < this.songs.length) {
             this.currentSongIndex = index;
             const song = this.songs[index];
-            const isVideo = song.isVideo || false;
             
             this.currentSongTitle.textContent = song.name;
             this.currentSongArtist.textContent = song.artist;
-            this.updateCCText(song.name);
-            this.displayComments();
             
-            // Toggle between audio and video player
-            if (isVideo) {
+            if (song.isVideo) {
                 this.audio.pause();
                 this.videoContainer.style.display = 'block';
                 this.mediaIcon.textContent = '🎬';
                 this.video.src = song.url;
-                this.video.load();
-                
-                // iOS Safari fullscreen prevention - CRITICAL
-                if (this.isIOSWebClip()) {
-                    this.video.setAttribute('playsinline', 'playsinline');
-                    this.video.setAttribute('webkit-playsinline', 'webkit-playsinline');
-                    this.video.style.maxHeight = '280px';
-                    this.video.style.maxWidth = '100%';
-                }
-                
+                this.video.setAttribute('playsinline', 'playsinline');
                 this.video.play().then(() => {
                     this.isPlaying = true;
                     this.updatePlayButton();
                     this.highlightCurrentSong();
                 }).catch(error => {
                     console.error('Error playing video:', error);
-                    this.showNotification('Error playing this video. It might be corrupted.');
                 });
             } else {
                 this.videoContainer.style.display = 'none';
                 this.mediaIcon.textContent = '🎵';
                 this.audio.src = song.url;
-                this.audio.load();
-                
-                // Initialize Web Audio API for audio effects
-                this.initializeAudioContext();
-                
                 this.audio.play().then(() => {
                     this.isPlaying = true;
                     this.updatePlayButton();
                     this.highlightCurrentSong();
                 }).catch(error => {
-                    console.error('Error playing song:', error);
-                    this.showNotification('Error playing this song. It might be corrupted.');
+                    console.error('Error playing audio:', error);
                 });
             }
         }
