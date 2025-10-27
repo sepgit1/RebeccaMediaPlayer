@@ -1,5 +1,5 @@
 .playlist-item .action-btn {
-    background: linear-gradient(135deg, rgba(80, 0, 32, 1) 0%, rgba(60, 0, 20, 1) 50%, rgba(40, 0, 15, 1) 100%);
+    background: linear-gradient(135deg, rgba(68, 28, 28, 1) 0%, rgba(45, 15, 15, 1) 50%, rgba(26, 6, 6, 1) 100%);
     color: #fff;
     border: none;
     border-radius: 50%;
@@ -28,10 +28,10 @@
 }
 
 :root {
-    --primary-color: rgba(80, 0, 32, 0.9);    /* Deep maroon with transparency */
-    --secondary-color: rgba(60, 0, 20, 0.85);  /* Darker maroon with transparency */
-    --tertiary-color: rgba(40, 0, 15, 0.8);    /* Very dark maroon */
-    --accent-color: rgba(100, 0, 40, 0.95);  /* Lighter maroon for accents */
+    --primary-color: rgba(68, 28, 28, 0.9);    /* Deep maroon with transparency */
+    --secondary-color: rgba(45, 15, 15, 0.85);  /* Darker maroon with transparency */
+    --tertiary-color: rgba(26, 6, 6, 0.8);    /* Very dark maroon */
+    --accent-color: rgba(68, 28, 28, 0.95);  /* Maroon accent */
 }
 
 body {
@@ -45,69 +45,19 @@ body {
     z-index: 1;
 }
 
-/* WSAP Shapes Background */
+/* Dynamic Background */
 body::before {
-    content: '';
-    position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: 
-        linear-gradient(45deg, rgba(80, 0, 32, 0.7) 25%, transparent 25%) -50px 0,
-        linear-gradient(-45deg, #00ffff 25%, transparent 25%) -50px 0,
-        linear-gradient(45deg, transparent 75%, rgba(80, 0, 32, 0.7) 75%),
-        linear-gradient(-45deg, transparent 75%, #00ffff 75%);
-    background-size: 100px 100px;
-    animation: wsapGrid 2s linear infinite;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.7;
-}
-
-body::after {
     content: '';
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: 
-        linear-gradient(90deg, rgba(60, 0, 20, 0.6) 50%, transparent 50%) 0 0,
-        linear-gradient(180deg, #00ffff 50%, transparent 50%) 0 0;
-    background-size: 50px 50px;
-    animation: wsapLines 1.5s linear infinite;
+    background: linear-gradient(45deg, rgba(68, 28, 28, 0.1) 0%, rgba(45, 15, 15, 0.05) 50%, rgba(68, 28, 28, 0.1) 100%);
     pointer-events: none;
-    z-index: 1;
-    opacity: 0.5;
-    mix-blend-mode: screen;
+    z-index: 0;
+    opacity: 0.7;
 }
-
-@keyframes wsapGrid {
-    0% {
-        transform: translateX(0) translateY(0);
-    }
-    100% {
-        transform: translateX(100px) translateY(100px);
-    }
-}
-
-@keyframes wsapLines {
-    0% {
-        background-position: 0 0;
-    }
-    100% {
-        background-position: 50px 50px;
-    }
-}
-
-@keyframes wsapFlow {
-    0% {
-        background-position: 0% 0%, 100% 100%, 50% 50%, 0% 50%;
-        filter: blur(40px) brightness(1);
-    }
-    25% {
-        background-position: 25% 25%, 75% 75%, 75% 25%, 25% 75%;
         filter: blur(45px) brightness(1.1);
     }
     50% {
@@ -160,7 +110,7 @@ body::after {
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
     overflow: hidden;
     position: relative;
-    border: 1px solid rgba(255, 20, 147, 0.15);
+    border: 1px solid rgba(68, 28, 28, 0.15);
     z-index: 999;
     min-height: 100vh;
     display: flex;
@@ -172,7 +122,7 @@ body::after {
     background: #800000;
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
-    border-bottom: 2px solid rgba(255, 20, 147, 0.4);
+    border-bottom: 2px solid rgba(68, 28, 28, 0.4);
     padding: 12px 20px;
     text-align: center;
     position: relative;
@@ -197,8 +147,8 @@ body::after {
 }
 
 .close-banner-btn {
-    background: rgba(255, 20, 147, 0.3);
-    border: 1px solid rgba(255, 20, 147, 0.5);
+    background: rgba(68, 28, 28, 0.3);
+    border: 1px solid rgba(68, 28, 28, 0.5);
     color: rgba(255, 255, 255, 0.9);
     width: 28px;
     height: 28px;
@@ -214,8 +164,8 @@ body::after {
 }
 
 .close-banner-btn:hover {
-    background: rgba(255, 20, 147, 0.5);
-    border-color: rgba(255, 20, 147, 0.8);
+    background: rgba(68, 28, 28, 0.5);
+    border-color: rgba(68, 28, 28, 0.8);
     transform: scale(1.1);
 }
 
@@ -237,19 +187,19 @@ body::after {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 20, 147, 0.5), transparent);
+    background: linear-gradient(90deg, transparent, rgba(68, 28, 28, 0.5), transparent);
 }
 
 /* Header */
 .header {
-    background: rgba(200, 40, 40, 0.75);
+    background: rgba(34, 12, 12, 0.75) !important;
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
     color: white;
     padding: 60px 30px;
     text-align: center;
     position: relative;
-    border-bottom: 2px solid rgba(255, 20, 147, 0.2);
+    border-bottom: 2px solid rgba(68, 28, 28, 0.2);
 }
 
 .header::before {
@@ -260,9 +210,9 @@ body::after {
     right: 0;
     bottom: 0;
     background: linear-gradient(45deg,
-        rgba(255, 20, 147, 0.05) 0%,
-        rgba(255, 105, 180, 0.02) 50%,
-        rgba(138, 43, 226, 0.05) 100%);
+        rgba(44, 22, 22, 0.05) 0%,
+        rgba(44, 22, 22, 0.02) 50%,
+        rgba(44, 22, 22, 0.05) 100%);
     pointer-events: none;
 }
 
@@ -277,7 +227,7 @@ body::after {
     font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
     text-shadow:
         0 2px 8px rgba(0,0,0,0.3),
-        0 0 20px rgba(255,20,147,0.2);
+        0 0 20px rgba(68,28,28,0.2);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -294,7 +244,7 @@ body::after {
 }
 
 .song-counter {
-    background: rgba(255, 20, 147, 0.1);
+    background: rgba(68, 28, 28, 0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     padding: 8px 16px;
@@ -302,8 +252,8 @@ body::after {
     font-weight: 400;
     font-size: 0.95rem;
     display: inline-block;
-    border: 1.5px solid rgba(255, 20, 147, 0.3);
-    box-shadow: 0 2px 8px rgba(255, 20, 147, 0.1);
+    border: 1.5px solid rgba(68, 28, 28, 0.3);
+    box-shadow: 0 2px 8px rgba(68, 28, 28, 0.1);
     position: relative;
     z-index: 1;
     color: rgba(255, 255, 255, 0.85);
@@ -331,15 +281,15 @@ body::after {
 .visualizer-container {
     padding: 45px 20px;
     background: linear-gradient(180deg,
-        rgba(255, 20, 147, 0.15) 0%,
-        rgba(138, 43, 226, 0.1) 100%);
+        rgba(68, 28, 28, 0.15) 0%,
+        rgba(68, 28, 28, 0.1) 100%);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 150px;
-    border-bottom: 2px solid rgba(255, 20, 147, 0.3);
+    border-bottom: 2px solid rgba(68, 28, 28, 0.3);
     margin-bottom: 30px;
 }
 
@@ -355,14 +305,14 @@ body::after {
     width: 8px;
     height: 30px;
     background: linear-gradient(180deg,
-        #ff1493 0%,
-        #ff69b4 50%,
+        #441c1c 0%,
+        #2d0f0f 50%,
         #da70d6 100%);
     border-radius: 4px;
     animation: pulse 0.6s ease-in-out infinite;
     box-shadow: 
-        0 0 15px rgba(255, 20, 147, 0.8),
-        0 0 30px rgba(255, 105, 180, 0.4);
+        0 0 15px rgba(68, 28, 28, 0.8),
+        0 0 30px rgba(68, 28, 28, 0.4);
 }
 
 .visualizer .bar:nth-child(1) { animation-delay: 0s; }
@@ -390,8 +340,8 @@ body::after {
 .video-playing .visualizer .bar {
     animation-duration: 0.35s;
     box-shadow: 
-        0 0 20px rgba(255, 20, 147, 1),
-        0 0 40px rgba(255, 105, 180, 0.6);
+        0 0 20px rgba(68, 28, 28, 1),
+        0 0 40px rgba(68, 28, 28, 0.6);
 }
 
 /* Scrollable Songs List */
@@ -438,7 +388,7 @@ body::after {
     margin-bottom: 8px;
     border-radius: 12px;
     background: transparent;
-    box-shadow: 0 0 8px 0 rgba(255,20,147,0.15);
+    box-shadow: 0 0 8px 0 rgba(68,28,28,0.15);
     transition: background 0.2s, box-shadow 0.2s;
     cursor: pointer;
     border: 1.5px solid #800000;
@@ -446,7 +396,7 @@ body::after {
 }
  .playlist-item.active {
     border: 2px solid #800000;
-    box-shadow: 0 0 12px 0 rgba(255,20,147,0.25);
+    box-shadow: 0 0 12px 0 rgba(68,28,28,0.25);
     border-radius: 25px;
 }
 }
@@ -497,8 +447,8 @@ body::after {
 
 .video-expand-btn,
 .video-close-btn {
-    background: rgba(255, 20, 147, 0.7);
-    border: 1px solid rgba(255, 20, 147, 0.9);
+    background: rgba(68, 28, 28, 0.7);
+    border: 1px solid rgba(68, 28, 28, 0.9);
     color: #fff;
     padding: 4px 8px;
     border-radius: 4px;
@@ -512,9 +462,9 @@ body::after {
 
 .video-expand-btn:hover,
 .video-close-btn:hover {
-    background: rgba(255, 20, 147, 1);
+    background: rgba(68, 28, 28, 1);
     transform: scale(1.08);
-    box-shadow: 0 4px 12px rgba(255, 20, 147, 0.4);
+    box-shadow: 0 4px 12px rgba(68, 28, 28, 0.4);
 }
 
 .video-time-display {
@@ -564,7 +514,7 @@ body::after {
     position: fixed;
     top: 20px;
     right: 20px;
-    background: rgba(255, 20, 147, 0.8);
+    background: rgba(68, 28, 28, 0.8);
     border: none;
     color: #fff;
     width: 48px;
@@ -580,7 +530,7 @@ body::after {
 }
 
 .video-fullscreen-close-btn:hover {
-    background: rgba(255, 20, 147, 1);
+    background: rgba(68, 28, 28, 1);
     transform: scale(1.1);
 }
 
@@ -603,9 +553,9 @@ body::after {
     height: 1px;
     background: linear-gradient(90deg,
         transparent,
-        rgba(255, 20, 147, 0.4),
-        rgba(255, 105, 180, 0.4),
-        rgba(138, 43, 226, 0.4),
+        rgba(68, 28, 28, 0.4),
+        rgba(68, 28, 28, 0.3),
+        rgba(68, 28, 28, 0.4),
         transparent);
 }
 
@@ -627,7 +577,7 @@ body::after {
     align-items: center;
     justify-content: center;
     box-shadow:
-        0 10px 30px rgba(255, 20, 147, 0.3),
+        0 10px 30px rgba(68, 28, 28, 0.3),
         0 0 0 1px rgba(255, 255, 255, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(20px);
@@ -711,9 +661,9 @@ body::after {
     right: 0;
     bottom: 0;
     background: linear-gradient(90deg,
-        rgba(255, 20, 147, 0.2),
-        rgba(255, 105, 180, 0.3),
-        rgba(138, 43, 226, 0.2));
+        rgba(68, 28, 28, 0.2),
+        rgba(68, 28, 28, 0.3),
+        rgba(68, 28, 28, 0.2));
     border-radius: 3px;
 }
 
@@ -726,7 +676,7 @@ body::after {
     width: 0%;
     transition: width 0.1s ease;
     border-radius: 3px;
-    box-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+    box-shadow: 0 0 10px rgba(68, 28, 28, 0.5);
 }
 
 /* Controls */
@@ -767,7 +717,7 @@ body::after {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);
+    background: linear-gradient(135deg, #441c1c 0%, #2d0f0f 100%);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -925,30 +875,30 @@ body::after {
 .comment-input:focus {
     outline: none;
     background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 20, 147, 0.5);
-    box-shadow: 0 0 20px rgba(255, 20, 147, 0.2);
+    border-color: rgba(68, 28, 28, 0.5);
+    box-shadow: 0 0 20px rgba(68, 28, 28, 0.2);
 }
 
 .post-comment-btn {
     background: linear-gradient(135deg,
-        rgba(255, 20, 147, 0.5),
-        rgba(138, 43, 226, 0.4));
+        rgba(68, 28, 28, 0.5),
+        rgba(68, 28, 28, 0.4));
     color: #ffffff;
-    border: 1px solid rgba(255, 20, 147, 0.3);
+    border: 1px solid rgba(68, 28, 28, 0.3);
     padding: 12px 24px;
     border-radius: 10px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.2);
+    box-shadow: 0 4px 15px rgba(68, 28, 28, 0.2);
 }
 
 .post-comment-btn:hover {
     background: linear-gradient(135deg,
-        rgba(255, 20, 147, 0.6),
-        rgba(138, 43, 226, 0.5));
-    box-shadow: 0 6px 20px rgba(255, 20, 147, 0.3);
+        rgba(68, 28, 28, 0.6),
+        rgba(68, 28, 28, 0.5));
+    box-shadow: 0 6px 20px rgba(68, 28, 28, 0.3);
     transform: translateY(-2px);
 }
 
@@ -997,7 +947,7 @@ body::after {
 
 .comment-author {
     font-weight: 600;
-    color: rgba(255, 20, 147, 0.8);
+    color: rgba(68, 28, 28, 0.8);
     font-size: 0.95rem;
 }
 
@@ -1073,10 +1023,10 @@ body::after {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #800000, #8b0000, #b22222);
+    background: linear-gradient(135deg, #441c1c, #2d0f0f, #1a0606);
     cursor: pointer;
     box-shadow:
-        0 4px 15px rgba(255, 20, 147, 0.5),
+        0 4px 15px rgba(68, 28, 28, 0.5),
         0 0 0 2px rgba(255, 255, 255, 0.2);
 }
 
@@ -1097,8 +1047,8 @@ body::after {
 }
 
 .upload-section.drag-over {
-    background: rgba(255, 20, 147, 0.2);
-    border-top: 2px solid rgba(255, 20, 147, 0.5);
+    background: rgba(68, 28, 28, 0.2);
+    border-top: 2px solid rgba(68, 28, 28, 0.5);
 }
 
 .drop-hint {
@@ -1109,7 +1059,7 @@ body::after {
 
 .upload-btn {
     background: linear-gradient(135deg,
-        rgba(255, 20, 147, 0.4),
+        rgba(68, 28, 28, 0.4),
         rgba(255, 105, 180, 0.3),
         rgba(138, 43, 226, 0.4));
     color: white;
@@ -1119,7 +1069,7 @@ body::after {
     font-weight: 500;
     transition: all 0.3s ease;
     box-shadow:
-        0 8px 25px rgba(255, 20, 147, 0.3),
+        0 8px 25px rgba(68, 28, 28, 0.3),
         0 0 0 1px rgba(255, 255, 255, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(20px);
@@ -1147,7 +1097,7 @@ body::after {
 .upload-btn:hover {
     transform: translateY(-2px);
     box-shadow:
-        0 12px 35px rgba(255, 20, 147, 0.4),
+        0 12px 35px rgba(68, 28, 28, 0.4),
         0 0 0 1px rgba(255, 255, 255, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
@@ -1215,10 +1165,10 @@ body::after {
 }
 
 .search-input:focus {
-    border-color: rgba(255, 20, 147, 0.5);
+    border-color: rgba(68, 28, 28, 0.5);
     box-shadow:
         0 4px 15px rgba(0, 0, 0, 0.2),
-        0 0 0 2px rgba(255, 20, 147, 0.2);
+        0 0 0 2px rgba(68, 28, 28, 0.2);
     background: rgba(255, 255, 255, 0.15);
 }
 
@@ -1272,7 +1222,7 @@ body::after {
     height: 100%;
     background: linear-gradient(90deg,
         transparent,
-        rgba(255, 20, 147, 0.1),
+        rgba(68, 28, 28, 0.1),
         transparent);
     transition: left 0.5s ease;
 }
@@ -1473,8 +1423,8 @@ body::after {
     text-align: center;
     font-size: 1.2rem;
     text-shadow:
-        0 1px 0 #ff69b4,
-        0 2px 0 #ff1493,
+        0 1px 0 #2d0f0f,
+        0 2px 0 #441c1c,
         0 3px 0 #da70d6,
         0 4px 1px rgba(0,0,0,.3),
         0 0 5px rgba(255,20,147,.5),
@@ -1796,7 +1746,7 @@ body::after {
 .install-app-btn {
     background: linear-gradient(135deg, rgba(255, 20, 147, 0.3), rgba(255, 105, 180, 0.3));
     border: 2px solid rgba(255, 20, 147, 0.6);
-    color: #ff1493;
+    color: #441c1c;
     font-size: 0.9rem;
     padding: 8px 14px;
     border-radius: 12px;
@@ -1880,7 +1830,7 @@ body::after {
 
 .close-btn:hover {
     transform: rotate(90deg);
-    color: var(--primary-color, #ff1493);
+    color: var(--primary-color, #441c1c);
 }
 
 .settings-section {
@@ -1996,7 +1946,7 @@ body::after {
     width: 40px;
     height: 24px;
     cursor: pointer;
-    accent-color: var(--primary-color, #ff1493);
+    accent-color: var(--primary-color, #441c1c);
 }
 
 .update-btn {
@@ -2057,7 +2007,7 @@ body::after {
     
     /* Status Colors */
     --success-color: #00b894;
-    --error-color: #ff4444;
+    --error-color: #441c1c;
     --warning-color: #ff7f50;
 }
 
@@ -2191,9 +2141,9 @@ body.light-theme .empty-state p {
 
 /* Color Scheme Variables */
 body.maroon-theme {
-    --primary-color: #c41e3a;
-    --secondary-color: #8b0000;
-    --tertiary-color: #a52a2a;
+    --primary-color: #441c1c;
+    --secondary-color: #2d0f0f;
+    --tertiary-color: #1a0606;
 }
 
 body.cyan-theme {
