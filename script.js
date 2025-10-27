@@ -60,27 +60,25 @@ const liveStorage = new LiveStorageManager();
 
 class MusicPlayer {
     constructor() {
-        // Initialize elements first
-        this.initializeElements();
-        this.bindEvents();
-        
-        // Set up basic state
         this.songs = [];
         this.currentSongIndex = 0;
         this.isPlaying = false;
         this.isShuffled = false;
         this.isRepeating = false;
-        this.maxSongs = 500;
         
-        // Load videos immediately
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
+            this.init();
+        }
+    }
+    
+    init() {
+        console.log('Initializing player...');
+        this.initializeElements();
+        this.bindEvents();
         this.loadBeccaVideos();
-        
-        // Start the first video
-        setTimeout(() => {
-            if (this.songs.length > 0) {
-                this.playSong(0);
-            }
-        }, 100);
         
         // Detect if running as installed PWA
         this.isInstalledPWA = this.detectInstalledPWA();
@@ -402,32 +400,46 @@ class MusicPlayer {
 
     loadBeccaVideos() {
         console.log('Loading videos...');
-        this.songs = [
-            { name: "Becca Bear", url: "videos/Becca Bear.mp4" },
-            { name: "Didn't Know Much Before", url: "videos/Didn't Know Much Before.mp4" },
-            { name: "If My Dad Was President", url: "videos/If My Dad Was President.mp4" },
-            { name: "Lit The World ORIGINAL", url: "videos/Lit The World ORIGINAL.mp4" },
-            { name: "LoveHopeFaith", url: "videos/LoveHopeFaith.mp4" },
-            { name: "Mine Mine Mine", url: "videos/Mine Mine Mine.mp4" },
-            { name: "MissMissYou", url: "videos/MissMissYou.mp4" },
-            { name: "My Babies", url: "videos/My Babies.mp4" },
-            { name: "Rebeca God lit the world with you!", url: "videos/Rebeca God lit the world with you!.mp4" },
-            { name: "Sceen You Around", url: "videos/Sceen You Around.mp4" },
-            { name: "What's up", url: "videos/What's up.mp4" }
-        ].map(video => ({
-            ...video,
-            artist: '🎬 Rebecca',
-            isVideo: true
-        }));
+        const videoFiles = [
+            "Becca Bear.mp4",
+            "Didn't Know Much Before.mp4",
+            "If My Dad Was President.mp4",
+            "Lit The World ORIGINAL.mp4",
+            "LoveHopeFaith.mp4",
+            "Mine Mine Mine.mp4",
+            "MissMissYou.mp4",
+            "My Babies.mp4",
+            "Rebeca God lit the world with you!.mp4",
+            "Sceen You Around.mp4",
+            "What's up.mp4"
+        ];
         
-        console.log(`Loaded ${this.songs.length} videos with direct paths`);
-        this.loadPlaylist();
-        this.updateSongCounter();
-        
-        // Start playing the first video
-        if (this.songs.length > 0) {
-            this.playSong(0);
-        }
+        // Check each video file exists
+        videoFiles.forEach(file => {
+            fetch(`videos/${file}`, { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        console.log(`Found video: ${file}`);
+                        // Add video to playlist when found
+                        this.songs.push({
+                            name: file.replace('.mp4', ''),
+                            artist: '🎬 Rebecca',
+                            url: `videos/${file}`,
+                            isVideo: true
+                        });
+                        // Update display after each video is found
+                        this.loadPlaylist();
+                        this.updateSongCounter();
+                        // Play first video once it's loaded
+                        if (this.songs.length === 1) {
+                            this.playSong(0);
+                        }
+                    } else {
+                        console.error(`Video not found: ${file}`);
+                    }
+                })
+                .catch(error => console.error(`Error checking video ${file}:`, error));
+        });
     }
 
     escapeHtml(text) {
