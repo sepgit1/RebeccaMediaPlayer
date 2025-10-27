@@ -5,6 +5,8 @@ class LiveStorageManager {
         this.storagePrefix = 'musicPlayer_';
         this.setupStorageSync();
 
+    }
+
     setupStorageSync() {
         // Listen for storage changes from other tabs
         window.addEventListener('storage', (e) => {
@@ -192,8 +194,8 @@ class MusicPlayer {
 
     bindEvents() {
         // Audio events
-        this.audio.addEventListener('loadedmetadata', () => {});
-        this.audio.addEventListener('timeupdate', () => {});
+        this.audio.addEventListener('loadedmetadata', () => this.handleLoadedMetadata());
+        this.audio.addEventListener('timeupdate', () => this.updateProgress());
         this.audio.addEventListener('ended', () => this.nextSong());
         this.audio.addEventListener('error', (e) => this.handleAudioError(e));
         
@@ -377,8 +379,8 @@ class MusicPlayer {
         // Clear file input
         this.fileInput.value = '';
         
-        if (audioFiles.length > 0) {
-            this.showNotification(`Added ${audioFiles.length} song(s) to your playlist!`);
+        if (mediaFiles.length > 0) {
+            this.showNotification(`Added ${mediaFiles.length} song(s) to your playlist!`);
         }
     }
 
@@ -796,6 +798,24 @@ class MusicPlayer {
 
     toggleRepeat() {
         this.isRepeating = !this.isRepeating;
+        this.repeatBtn.classList.toggle('active', this.isRepeating);
+        this.showNotification(this.isRepeating ? 'Repeat enabled' : 'Repeat disabled');
+    }
+
+    handleLoadedMetadata() {
+        const duration = this.formatTime(this.audio.duration);
+        document.getElementById('duration').textContent = duration;
+    }
+
+    updateProgress() {
+        const progress = document.getElementById('progress');
+        const currentTimeEl = document.getElementById('currentTime');
+        
+        if (progress && currentTimeEl) {
+            const percent = (this.audio.currentTime / this.audio.duration) * 100;
+            progress.style.width = percent + '%';
+            currentTimeEl.textContent = this.formatTime(this.audio.currentTime);
+        }
         this.repeatBtn.classList.toggle('active', this.isRepeating);
         this.showNotification(this.isRepeating ? 'Repeat enabled' : 'Repeat disabled');
     }
@@ -1959,11 +1979,31 @@ class MusicPlayer {
 
 // Initialize the music player when the page loads
 let musicPlayer;
-document.addEventListener('DOMContentLoaded', () => {
-    musicPlayer = new MusicPlayer();
-    // Google Drive sync is disabled for now to avoid errors
-    // To re-enable, uncomment the lines below:
-    // musicPlayer.initializeGoogleDriveSync().then(() => {
-    //     console.log('Google Drive sync initialized');
-    // });
+window.addEventListener('load', () => {
+    try {
+        musicPlayer = new MusicPlayer();
+        console.log('Music player initialized');
+        
+        // Initialize UI elements
+        const dropArea = document.querySelector('.drop-area');
+        if (dropArea) {
+            dropArea.style.display = 'block';
+        }
+        
+        const addSongBtn = document.getElementById('addSongBtn');
+        if (addSongBtn) {
+            addSongBtn.style.display = 'block';
+        }
+        
+        // Load existing songs
+        if (musicPlayer.songs && musicPlayer.songs.length > 0) {
+            console.log('Loading existing songs:', musicPlayer.songs.length);
+            musicPlayer.loadPlaylist();
+        } else {
+            console.log('No existing songs found');
+            musicPlayer.checkEmptyState();
+        }
+    } catch (error) {
+        console.error('Error initializing music player:', error);
+    }
 });
