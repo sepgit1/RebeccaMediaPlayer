@@ -1862,34 +1862,42 @@ class MusicPlayer {
     }
 
     initializeDynamicShapes() {
-        this.canvas = document.getElementById('dynamicShapesCanvas');
-        if (!this.canvas) {
-            this.canvas = document.createElement('canvas');
-            this.canvas.id = 'dynamicShapesCanvas';
-            this.canvas.style.position = 'fixed';
-            this.canvas.style.top = '0';
-            this.canvas.style.left = '0';
-            this.canvas.style.width = '100%';
-            this.canvas.style.height = '100%';
-            this.canvas.style.zIndex = '-1';
-            this.canvas.style.pointerEvents = 'none';
-            document.body.insertBefore(this.canvas, document.body.firstChild);
+        // Create bubbles container if it doesn't exist
+        let bubblesContainer = document.querySelector('.bubbles');
+        if (!bubblesContainer) {
+            bubblesContainer = document.createElement('div');
+            bubblesContainer.className = 'bubbles';
+            document.body.insertBefore(bubblesContainer, document.body.firstChild);
         }
 
-        this.ctx = this.canvas.getContext('2d');
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-
-        // Create shapes with different styles
-        this.shapes = Array.from({ length: 60 }, () => ({
-            x: Math.random() * this.canvas.width,
-            y: Math.random() * this.canvas.height,
-            size: Math.random() * 100 + 20,
-            dx: (Math.random() - 0.5) * 0.6,
-            dy: (Math.random() - 0.5) * 0.6,
-            color: 'rgba(68, 28, 28, 0.2)',
-            shape: ['circle', 'square', 'triangle'][Math.floor(Math.random() * 3)]
-        }));
+        // Create bubbles
+        const numBubbles = 20;
+        for (let i = 0; i < numBubbles; i++) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            
+            // Random size between 30px and 120px
+            const size = Math.random() * 90 + 30;
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            
+            // Random starting position
+            bubble.style.left = `${Math.random() * 100}%`;
+            bubble.style.top = `${Math.random() * 100}%`;
+            
+            // Random animation properties
+            const tx = Math.random() * 400 - 200; // translate X between -200px and 200px
+            const ty = Math.random() * 400 - 200; // translate Y between -200px and 200px
+            bubble.style.setProperty('--tx', `${tx}px`);
+            bubble.style.setProperty('--ty', `${ty}px`);
+            
+            // Random animation duration between 15s and 30s
+            bubble.style.animationDuration = `${Math.random() * 15 + 15}s`;
+            // Random animation delay
+            bubble.style.animationDelay = `${Math.random() * -30}s`;
+            
+            bubblesContainer.appendChild(bubble);
+        }
             }
 
         // Animation loop
