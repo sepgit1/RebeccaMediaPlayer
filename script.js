@@ -404,26 +404,41 @@ class MusicPlayer {
         this.songs.forEach((song, index) => {
             const li = document.createElement('li');
             li.className = 'playlist-item';
+            if (index === this.currentSongIndex) {
+                li.classList.add('active');
+            }
             
             li.innerHTML = `
                 <div class="song-details">
                     <h4>${this.escapeHtml(song.name)}</h4>
+                    <p class="song-artist">${this.escapeHtml(song.artist || '')}</p>
                 </div>
                 <div class="song-actions">
-                    <button class="action-btn" onclick="musicPlayer.playSong(${index})" title="Play">▶️</button>
+                    <button class="action-btn" title="Play">▶️</button>
                 </div>
             `;
             
+            // Add click event to the entire item
             li.addEventListener('click', (e) => {
                 if (!e.target.classList.contains('action-btn')) {
                     this.playSong(index);
                 }
             });
             
+            // Add click event to the play button
+            const playBtn = li.querySelector('.action-btn');
+            playBtn.addEventListener('click', () => this.playSong(index));
+            
             this.playlist.appendChild(li);
         });
         
         this.highlightCurrentSong();
+        
+        // Auto-scroll to active song
+        const activeSong = this.playlist.querySelector('.playlist-item.active');
+        if (activeSong) {
+            activeSong.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
     }
 
     loadBeccaVideos() {
