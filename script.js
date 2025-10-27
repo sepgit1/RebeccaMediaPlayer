@@ -67,14 +67,10 @@ class MusicPlayer {
         this.isRepeating = false;
         this.maxSongs = 500;
         
-        // Web Audio API initialization
-        this.audioContext = null;
-        this.audioSource = null;
-        this.bassFilter = null;
-        this.midFilter = null;
-        this.trebleFilter = null;
-        this.gainNode = null;
-        this.analyser = null;
+        // Initialize elements and load videos
+        this.initializeElements();
+        this.bindEvents();
+        this.loadBeccaVideos();
         
         // Detect if running as installed PWA
         this.isInstalledPWA = this.detectInstalledPWA();
@@ -108,12 +104,6 @@ class MusicPlayer {
         
         this.initializeElements();
         this.bindEvents();
-        this.loadPlaylist();
-        this.updateSongCounter();
-        this.checkEmptyState();
-        this.loadSettings();
-        this.displayUserName();
-        this.loadBeccaVideos();
         
         // PWA install prompt
         this.initializePWA();
@@ -413,34 +403,39 @@ class MusicPlayer {
     }
 
     loadBeccaVideos() {
-        // Load Becca's videos from manifest
-        fetch('videos/manifest.json')
-            .then(response => response.json())
-            .then(videos => {
-                // Convert videos to the format expected by the app
-                const formattedVideos = videos.map(video => ({
-                    name: video.title,
-                    artist: video.artist,
-                    url: video.path,
-                    isVideo: true,
-                    dateAdded: video.dateAdded,
-                    duration: 0
-                }));
-                
-                // Add to playlist
-                this.songs = [...formattedVideos];
-                this.saveToStorage();
-                
-                // Refresh the display
-                this.loadPlaylist();
-                this.updateSongCounter();
-                this.checkEmptyState();
-                
-                this.showNotification(`✨ Loaded ${videos.length} songs!`);
-            })
-            .catch(error => {
-                console.error('Error loading videos:', error);
-            });
+        // Direct list of videos
+        const videos = [
+            "Becca Bear.mp4",
+            "Didn't Know Much Before.mp4",
+            "If My Dad Was President.mp4",
+            "Lit The World ORIGINAL.mp4",
+            "LoveHopeFaith.mp4",
+            "Mine Mine Mine.mp4",
+            "MissMissYou.mp4",
+            "My Babies.mp4",
+            "Rebeca God lit the world with you!.mp4",
+            "Sceen You Around.mp4",
+            "What's up.mp4"
+        ];
+        
+        // Convert to song format
+        const formattedVideos = videos.map(video => ({
+            name: video.replace('.mp4', ''),
+            artist: '🎬 Rebecca',
+            url: 'videos/' + video,
+            isVideo: true
+        }));
+        
+        // Set as current playlist
+        this.songs = formattedVideos;
+        
+        // Update display
+        this.loadPlaylist();
+        this.updateSongCounter();
+        
+        if (this.songs.length > 0) {
+            this.playSong(0);
+        }
     }
 
     escapeHtml(text) {
