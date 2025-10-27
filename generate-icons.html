@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Icon Generator</title>
+</head>
+<body>
+    <div id="status">Generating icons...</div>
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        
+        async function generateIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#FF6B00');
+            gradient.addColorStop(1, '#FF8E00');
+            
+            // Draw rounded rectangle background
+            ctx.fillStyle = gradient;
+            const radius = size * 0.2;
+            ctx.beginPath();
+            ctx.moveTo(radius, 0);
+            ctx.lineTo(size - radius, 0);
+            ctx.quadraticCurveTo(size, 0, size, radius);
+            ctx.lineTo(size, size - radius);
+            ctx.quadraticCurveTo(size, size, size - radius, size);
+            ctx.lineTo(radius, size);
+            ctx.quadraticCurveTo(0, size, 0, size - radius);
+            ctx.lineTo(0, radius);
+            ctx.quadraticCurveTo(0, 0, radius, 0);
+            ctx.fill();
+            
+            // Draw music note
+            ctx.fillStyle = '#6C63FF';
+            const noteSize = size * 0.5;
+            const centerX = size / 2;
+            const centerY = size / 2;
+            
+            // Note head
+            ctx.beginPath();
+            ctx.ellipse(
+                centerX - noteSize * 0.2,
+                centerY + noteSize * 0.2,
+                noteSize * 0.2,
+                noteSize * 0.15,
+                -0.3,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+            
+            // Note stem
+            ctx.fillRect(
+                centerX - noteSize * 0.1,
+                centerY - noteSize * 0.3,
+                noteSize * 0.08,
+                noteSize * 0.6
+            );
+            
+            // Note flag
+            ctx.beginPath();
+            ctx.moveTo(centerX - noteSize * 0.1, centerY - noteSize * 0.3);
+            ctx.quadraticCurveTo(
+                centerX + noteSize * 0.2,
+                centerY - noteSize * 0.4,
+                centerX + noteSize * 0.1,
+                centerY - noteSize * 0.1
+            );
+            ctx.quadraticCurveTo(
+                centerX + noteSize * 0.15,
+                centerY - noteSize * 0.25,
+                centerX - noteSize * 0.1,
+                centerY - noteSize * 0.3
+            );
+            ctx.fill();
+            
+            return new Promise(resolve => {
+                canvas.toBlob(blob => {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `icon-${size}x${size}.png`;
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                    resolve();
+                }, 'image/png');
+            });
+        }
+        
+        async function generateAll() {
+            const status = document.getElementById('status');
+            try {
+                for (const size of sizes) {
+                    status.textContent = `Generating ${size}x${size} icon...`;
+                    await generateIcon(size);
+                }
+                status.textContent = 'All icons generated! You can close this window.';
+            } catch (error) {
+                status.textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        generateAll();
+    </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Icon Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #2d1a2d; color: white; }
+        .icon { margin: 10px; display: inline-block; text-align: center; }
+        canvas { border: 1px solid #ccc; margin: 5px; background: transparent; }
+        button { 
+            padding: 10px 20px;
+            background: #ff1493;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background: #ff69b4;
+        }
+    </style>
+</head>
+<body>
+    <h1>Music Player Icon Generator</h1>
+    <button onclick="generateAndSaveAll()">Generate & Save All Icons</button>
+    <div id="icons"></div>
+    
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        const iconsContainer = document.getElementById('icons');
+        
+        function drawMusicNote(ctx, width, height) {
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Music note shape
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const size = Math.min(width, height) * 0.6;
+            
+            ctx.fillStyle = '#ff6b00';  // Orange color
+            
+            // Note head
+            ctx.beginPath();
+            ctx.ellipse(centerX - size * 0.2, centerY + size * 0.2, size * 0.2, size * 0.15, -0.3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Note stem
+            ctx.fillRect(centerX - size * 0.1, centerY - size * 0.3, size * 0.08, size * 0.6);
+            
+            // Note flag
+            ctx.beginPath();
+            ctx.moveTo(centerX - size * 0.1, centerY - size * 0.3);
+            ctx.quadraticCurveTo(
+                centerX + size * 0.2, centerY - size * 0.4,
+                centerX + size * 0.1, centerY - size * 0.1
+            );
+            ctx.quadraticCurveTo(
+                centerX + size * 0.15, centerY - size * 0.25,
+                centerX - size * 0.1, centerY - size * 0.3
+            );
+            ctx.fill();
+        }
+
+        async function generateAndSaveAll() {
+            for (const size of sizes) {
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                
+                // Draw the icon
+                drawMusicNote(ctx, size, size);
+                
+                // Convert to blob
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `icon-${size}x${size}.png`;
+                
+                // Auto-click to download
+                link.click();
+                
+                // Clean up
+                URL.revokeObjectURL(link.href);
+            }
+            
+            alert('All icons have been generated and downloaded! Please move them to the icons folder.');
+        }
+    </script>
+</body>
+</html>

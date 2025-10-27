@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Icon Generator</title>
+</head>
+<body style="background: #333; color: white;">
+    <h2>Generating icons...</h2>
+    <div id="status">Starting...</div>
+    
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        
+        async function generateIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Solid orange background
+            ctx.fillStyle = '#FF6B00';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Purple music note
+            ctx.fillStyle = '#6C63FF';
+            const noteSize = size * 0.6;
+            const x = size * 0.2;
+            const y = size * 0.2;
+            
+            // Note head
+            ctx.beginPath();
+            ctx.ellipse(
+                x + noteSize * 0.6,
+                y + noteSize * 0.6,
+                noteSize * 0.2,
+                noteSize * 0.15,
+                0,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+            
+            // Stem
+            ctx.fillRect(
+                x + noteSize * 0.7,
+                y,
+                noteSize * 0.1,
+                noteSize * 0.7
+            );
+            
+            return new Promise(resolve => {
+                canvas.toBlob(blob => {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `icon-${size}x${size}.png`;
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                    resolve();
+                }, 'image/png');
+            });
+        }
+        
+        async function generateAll() {
+            const status = document.getElementById('status');
+            for (const size of sizes) {
+                status.textContent = `Generating ${size}x${size} icon...`;
+                await generateIcon(size);
+                await new Promise(resolve => setTimeout(resolve, 500)); // Small delay between downloads
+            }
+            status.textContent = 'Done! All icons have been generated. You can close this window now.';
+        }
+        
+        generateAll();
+    </script>
+</body>
+</html>
