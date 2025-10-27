@@ -31,13 +31,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="styles.css?v=2025-10-26-v5">
-    
-        <!-- GSAP Animation Library -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-        <!-- Google API Scripts for Drive Integration -->
-        <script src="https://apis.google.com/js/api.js"></script>
-        <script src="https://accounts.google.com/gsi/client"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
@@ -586,7 +580,13 @@
         }
     </script>
 
-    <!-- Scripts -->
-    <script src="script.js?v=2025-10-26-v5"></script>
+    <!-- Core player script -->
+    <script src="script.js"></script>
+    <script>
+        // Initialize player after DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.musicPlayer = new MusicPlayer();
+        });
+    </script>
 </body>
 </html>
