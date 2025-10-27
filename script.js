@@ -60,7 +60,17 @@ const liveStorage = new LiveStorageManager();
 
 class MusicPlayer {
     constructor() {
-        this.songs = liveStorage.get('songs') || [];
+        const savedSongs = liveStorage.get('songs') || [];
+        this.songs = savedSongs.map(song => {
+            // Recreate object URLs for saved songs
+            if (song.file && song.url) {
+                return {
+                    ...song,
+                    url: song.url // Keep the existing URL
+                };
+            }
+            return song;
+        });
         this.comments = liveStorage.get('comments') || {};
         this.currentSongIndex = 0;
         this.isPlaying = false;
@@ -385,17 +395,8 @@ class MusicPlayer {
     }
 
     saveToStorage() {
-        // We can't store the actual file objects or URLs in localStorage
-        // So we'll store metadata and recreate URLs when needed
-        const songsForStorage = this.songs.map(song => ({
-            id: song.id,
-            name: song.name,
-            artist: song.artist,
-            dateAdded: song.dateAdded,
-            fileName: song.file ? song.file.name : null
-        }));
-        
-        liveStorage.set('songs', songsForStorage);
+        // Store the complete song objects including URLs
+        liveStorage.set('songs', this.songs);
     }
 
     loadPlaylist() {
