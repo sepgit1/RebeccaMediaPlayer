@@ -35,12 +35,25 @@ body {
     font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
     margin: 0;
     overflow: hidden;
-    background: linear-gradient(135deg, #441c1c, #2d0f0f, #1a0606);
+    background: #2d0f0f; /* Solid maroon background */
     min-height: 100vh;
     color: #ffffff;
     padding: 10px;
     position: relative;
     z-index: 1;
+}
+
+/* Translucent maroon overlay */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(68, 28, 28, 0.4); /* Translucent maroon */
+    pointer-events: none;
+    z-index: 2;
 }
 
 .bubbles {
@@ -51,7 +64,7 @@ body {
     left: 0;
     overflow: hidden;
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
 }
 
 .bubble {
@@ -59,13 +72,15 @@ body {
     border-radius: 50%;
     background: radial-gradient(
         circle at 30% 30%,
-        rgba(255, 255, 255, 0.6),
-        rgba(255, 255, 255, 0.1)
+        rgba(255, 255, 255, 0.8),
+        rgba(255, 255, 255, 0.2)
     );
-    box-shadow: inset -5px -5px 15px rgba(255, 255, 255, 0.2),
-                inset 5px 5px 15px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(2px);
-    opacity: 0.8;
+    box-shadow: inset -5px -5px 15px rgba(255, 255, 255, 0.3),
+                inset 5px 5px 15px rgba(0, 0, 0, 0.2),
+                0 0 20px rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    opacity: 0.7;
     animation: float 10s linear infinite;
 }
 
@@ -81,6 +96,8 @@ body {
 .container {
     max-width: 900px;
     margin: 0 auto;
+    position: relative;
+    z-index: 3;
     -webkit-backdrop-filter: blur(25px);
     border-radius: 25px;
     position: relative;
