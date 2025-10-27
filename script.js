@@ -4,7 +4,6 @@ class LiveStorageManager {
         this.listeners = new Map();
         this.storagePrefix = 'musicPlayer_';
         this.setupStorageSync();
-    }
 
     setupStorageSync() {
         // Listen for storage changes from other tabs
@@ -86,9 +85,9 @@ class MusicPlayer {
             maroon: {
                 name: 'Maroon',
                 dark: '#5a0000',
-                medium: '#8b0000',
-                light: '#c41e3a',
-                accent: '#ff3d3d'
+                medium: '#2d0f0f',
+                light: '#441c1c',
+                accent: '#2d0f0f'
             },
             cyan: {
                 name: 'Cyan',
@@ -1863,87 +1862,89 @@ class MusicPlayer {
     }
 
     initializeDynamicShapes() {
-        const canvas = document.getElementById('dynamicShapesCanvas');
-        if (!canvas || !window.gsap) return;
-        
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        // Simplified gradient background
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-        gradient.addColorStop(0, 'rgba(45, 26, 45, 0.1)');
-        gradient.addColorStop(0.5, 'rgba(255, 20, 147, 0.05)');
-        gradient.addColorStop(1, 'rgba(45, 26, 45, 0.1)');
-        
-        // Simple floating circles
-        class Circle {
-            constructor() {
-                this.reset();
-            }
-            
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = 1 + Math.random() * 3;
-                this.speed = 0.2 + Math.random() * 0.3;
-                this.opacity = 0.1 + Math.random() * 0.1;
-            }
-            
-            update() {
-                this.y -= this.speed;
-                if (this.y < -this.size * 2) {
-                    this.y = canvas.height + this.size * 2;
-                    this.x = Math.random() * canvas.width;
-                }
-            }
-            
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-                ctx.fill();
-            }
+        this.canvas = document.getElementById('dynamicShapesCanvas');
+        if (!this.canvas) {
+            this.canvas = document.createElement('canvas');
+            this.canvas.id = 'dynamicShapesCanvas';
+            this.canvas.style.position = 'fixed';
+            this.canvas.style.top = '0';
+            this.canvas.style.left = '0';
+            this.canvas.style.width = '100%';
+            this.canvas.style.height = '100%';
+            this.canvas.style.zIndex = '-1';
+            this.canvas.style.pointerEvents = 'none';
+            document.body.insertBefore(this.canvas, document.body.firstChild);
         }
-        
-        const circles = Array(15).fill().map(() => new Circle());
-        
-        // Simple animation loop
-        const animate = () => {
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);            circles.forEach(circle => {
-                circle.update();
-                circle.draw();
-            });
-            
-            requestAnimationFrame(animate);
-        };
-        animate();
-        
-        // GSAP animations for rotation and pulsing
-        gsap.to(shapes, {
-            rotation: '+=6.28',  // Full rotation
-            duration: 8 + Math.random() * 4,
-            repeat: -1,
-            ease: "linear",
-            onUpdate: () => {
-                // Continuously update
+
+        this.ctx = this.canvas.getContext('2d');
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+
+        // Create shapes with different styles
+        this.shapes = Array.from({ length: 60 }, () => ({
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height,
+            size: Math.random() * 100 + 20,
+            dx: (Math.random() - 0.5) * 0.6,
+            dy: (Math.random() - 0.5) * 0.6,
+            color: 'rgba(68, 28, 28, 0.2)',
+            shape: ['circle', 'square', 'triangle'][Math.floor(Math.random() * 3)]
+        }));
             }
-        });
+
+        // Animation loop
+        const updateAnimation = () => {
+
+        // Animation loop
+        let updateAnimation = () => {
+            if (!this.ctx || !this.canvas) return;
+            
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            
+            // Draw and update shapes
+            for (let s of this.shapes) {
+                // Update position
+                s.x += s.dx;
+                s.y += s.dy;
+                if (s.x < 0 || s.x > this.canvas.width) s.dx *= -1;
+                if (s.y < 0 || s.y > this.canvas.height) s.dy *= -1;
+                
+                // Draw shape
+                this.ctx.fillStyle = s.color;
+                this.ctx.beginPath();
+                switch (s.shape) {
+                    case "circle":
+                        this.ctx.arc(s.x, s.y, s.size / 2, 0, Math.PI * 2);
+                        break;
+                    case "square":
+                        this.ctx.rect(s.x - s.size / 2, s.y - s.size / 2, s.size, s.size);
+                        break;
+                    case "triangle":
+                        this.ctx.moveTo(s.x, s.y - s.size / 2);
+                        this.ctx.lineTo(s.x - s.size / 2, s.y + s.size / 2);
+                        this.ctx.lineTo(s.x + s.size / 2, s.y + s.size / 2);
+                        this.ctx.closePath();
+                        break;
+                }
+                this.ctx.fill();
+            }
+            
+            requestAnimationFrame(updateAnimation);
+        };
         
-        // Pulsing size animation
-        gsap.to(shapes, {
-            size: (i, target) => target.size * 1.15,
-            duration: 4,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut"
-        });
+        // Start the animation
+        updateAnimation();
         
         // Handle window resize
         window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+            
+            // Keep shapes within bounds
+            this.shapes.forEach(s => {
+                if (s.x > this.canvas.width) s.x = this.canvas.width - s.size;
+                if (s.y > this.canvas.height) s.y = this.canvas.height - s.size;
+            });
         });
     }
 }
