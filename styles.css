@@ -36,7 +36,6 @@ body {
     min-height: 100vh;
     color: #ffffff;
     padding: 10px;
-    overflow: hidden;
     position: relative;
     z-index: 1;
 }
