@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head><title>Icon Generator</title></head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+    const canvas = document.querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+    const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+    
+    function generateIcon(size) {
+        canvas.width = size;
+        canvas.height = size;
+        
+        // Clear and set background
+        ctx.fillStyle = '#FF6B00';
+        ctx.fillRect(0, 0, size, size);
+        
+        // Draw music note in purple
+        ctx.fillStyle = '#6C63FF';
+        const scale = size / 100;
+        
+        // Note head
+        ctx.beginPath();
+        ctx.ellipse(
+            size * 0.6,
+            size * 0.6,
+            size * 0.15,
+            size * 0.12,
+            0,
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
+        
+        // Stem
+        ctx.fillRect(
+            size * 0.7,
+            size * 0.2,
+            size * 0.08,
+            size * 0.5
+        );
+        
+        return canvas.toDataURL();
+    }
+
+    async function downloadIcon(size) {
+        const link = document.createElement('a');
+        link.href = generateIcon(size);
+        link.download = `icon-${size}x${size}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    async function generateAll() {
+        for (const size of sizes) {
+            await downloadIcon(size);
+        }
+        document.body.innerHTML = '<h2>All icons generated! Please move them to the icons folder.</h2>';
+    }
+
+    generateAll();
+    </script>
+</body>
+</html>
