@@ -402,30 +402,32 @@ class MusicPlayer {
 
     loadBeccaVideos() {
         console.log('Loading videos...');
-        const videos = [
-            "Becca Bear",
-            "Didn't Know Much Before",
-            "If My Dad Was President",
-            "Lit The World ORIGINAL",
-            "LoveHopeFaith",
-            "Mine Mine Mine",
-            "MissMissYou",
-            "My Babies",
-            "Rebeca God lit the world with you!",
-            "Sceen You Around",
-            "What's up"
-        ];
-        
-        this.songs = videos.map(title => ({
-            name: title,
+        this.songs = [
+            { name: "Becca Bear", url: "videos/Becca Bear.mp4" },
+            { name: "Didn't Know Much Before", url: "videos/Didn't Know Much Before.mp4" },
+            { name: "If My Dad Was President", url: "videos/If My Dad Was President.mp4" },
+            { name: "Lit The World ORIGINAL", url: "videos/Lit The World ORIGINAL.mp4" },
+            { name: "LoveHopeFaith", url: "videos/LoveHopeFaith.mp4" },
+            { name: "Mine Mine Mine", url: "videos/Mine Mine Mine.mp4" },
+            { name: "MissMissYou", url: "videos/MissMissYou.mp4" },
+            { name: "My Babies", url: "videos/My Babies.mp4" },
+            { name: "Rebeca God lit the world with you!", url: "videos/Rebeca God lit the world with you!.mp4" },
+            { name: "Sceen You Around", url: "videos/Sceen You Around.mp4" },
+            { name: "What's up", url: "videos/What's up.mp4" }
+        ].map(video => ({
+            ...video,
             artist: '🎬 Rebecca',
-            url: `videos/${title}.mp4`,
             isVideo: true
         }));
         
-        console.log(`Loaded ${this.songs.length} videos`);
+        console.log(`Loaded ${this.songs.length} videos with direct paths`);
         this.loadPlaylist();
         this.updateSongCounter();
+        
+        // Start playing the first video
+        if (this.songs.length > 0) {
+            this.playSong(0);
+        }
     }
 
     escapeHtml(text) {
