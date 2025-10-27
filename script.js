@@ -60,6 +60,11 @@ const liveStorage = new LiveStorageManager();
 
 class MusicPlayer {
     constructor() {
+        // Initialize elements first
+        this.initializeElements();
+        this.bindEvents();
+        
+        // Set up basic state
         this.songs = [];
         this.currentSongIndex = 0;
         this.isPlaying = false;
@@ -67,10 +72,15 @@ class MusicPlayer {
         this.isRepeating = false;
         this.maxSongs = 500;
         
-        // Initialize elements and load videos
-        this.initializeElements();
-        this.bindEvents();
+        // Load videos immediately
         this.loadBeccaVideos();
+        
+        // Start the first video
+        setTimeout(() => {
+            if (this.songs.length > 0) {
+                this.playSong(0);
+            }
+        }, 100);
         
         // Detect if running as installed PWA
         this.isInstalledPWA = this.detectInstalledPWA();
@@ -360,7 +370,14 @@ class MusicPlayer {
     }
 
     loadPlaylist() {
+        console.log('Updating playlist display...');
+        if (!this.playlist) {
+            console.error('Playlist element not found');
+            return;
+        }
+        
         this.playlist.innerHTML = '';
+        console.log(`Loading ${this.songs.length} songs into playlist`);
         
         this.songs.forEach((song, index) => {
             const li = document.createElement('li');
@@ -372,70 +389,43 @@ class MusicPlayer {
             li.innerHTML = `
                 <div class="song-details">
                     <h4>${this.escapeHtml(song.name)}</h4>
-                    <p class="song-artist">${this.escapeHtml(song.artist || '')}</p>
                 </div>
                 <div class="song-actions">
-                    <button class="action-btn" title="Play">▶️</button>
+                    <button class="action-btn">▶️</button>
                 </div>
             `;
             
-            // Add click event to the entire item
-            li.addEventListener('click', (e) => {
-                if (!e.target.classList.contains('action-btn')) {
-                    this.playSong(index);
-                }
-            });
-            
-            // Add click event to the play button
-            const playBtn = li.querySelector('.action-btn');
-            playBtn.addEventListener('click', () => this.playSong(index));
-            
+            li.addEventListener('click', () => this.playSong(index));
             this.playlist.appendChild(li);
         });
-        
-        this.highlightCurrentSong();
-        
-        // Auto-scroll to active song
-        const activeSong = this.playlist.querySelector('.playlist-item.active');
-        if (activeSong) {
-            activeSong.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
     }
 
     loadBeccaVideos() {
-        // Direct list of videos
+        console.log('Loading videos...');
         const videos = [
-            "Becca Bear.mp4",
-            "Didn't Know Much Before.mp4",
-            "If My Dad Was President.mp4",
-            "Lit The World ORIGINAL.mp4",
-            "LoveHopeFaith.mp4",
-            "Mine Mine Mine.mp4",
-            "MissMissYou.mp4",
-            "My Babies.mp4",
-            "Rebeca God lit the world with you!.mp4",
-            "Sceen You Around.mp4",
-            "What's up.mp4"
+            "Becca Bear",
+            "Didn't Know Much Before",
+            "If My Dad Was President",
+            "Lit The World ORIGINAL",
+            "LoveHopeFaith",
+            "Mine Mine Mine",
+            "MissMissYou",
+            "My Babies",
+            "Rebeca God lit the world with you!",
+            "Sceen You Around",
+            "What's up"
         ];
         
-        // Convert to song format
-        const formattedVideos = videos.map(video => ({
-            name: video.replace('.mp4', ''),
+        this.songs = videos.map(title => ({
+            name: title,
             artist: '🎬 Rebecca',
-            url: 'videos/' + video,
+            url: `videos/${title}.mp4`,
             isVideo: true
         }));
         
-        // Set as current playlist
-        this.songs = formattedVideos;
-        
-        // Update display
+        console.log(`Loaded ${this.songs.length} videos`);
         this.loadPlaylist();
         this.updateSongCounter();
-        
-        if (this.songs.length > 0) {
-            this.playSong(0);
-        }
     }
 
     escapeHtml(text) {
